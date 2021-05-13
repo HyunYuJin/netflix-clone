@@ -1,1 +1,3 @@
-# netflix-clone
+# Side Project (Netflix Clone)
+
+## PWA
