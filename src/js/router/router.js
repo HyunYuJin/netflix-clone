@@ -94,8 +94,6 @@ class Router extends EventEmitter {
         const path = this._getPath()
         const route = this._getRoute(path)
 
-        console.log('adfadsf', this)
-
         if(route) {
             this._render(route)
         }

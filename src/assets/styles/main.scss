@@ -1,0 +1,76 @@
+@import './normalize.scss';
+@import './base.scss';
+@import './utils.scss';
+
+header {
+    height: 70px;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, .7) 10%, rgba(0, 0, 0, 0));
+    height: 100%;
+    z-index: 1;
+    padding: 0 2%;
+
+    & > a {
+        font-size: 0.9rem;
+        color: #e5e5e5;
+        padding: 0 1.2rem;
+        font-weight: 300;
+        vertical-align: middle;
+    }
+
+    .logo {
+        display: inline-block;
+        font-size: 25px;
+        color: #E50914;
+        font-weight: 600;
+    }
+}
+
+// home.html
+.slide-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    height: 200px;
+    // display: flex;
+    // flex-direction: column;
+
+    & .slider {
+        // position: absolute;
+        // width: 100%;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+
+        & .slider-item {
+            // position: absolute;
+            // width: 100%;
+            // padding: 0 10%;
+            // box-sizing: border-box;
+            // top: 50%;
+            // transform: translateY(-50%);
+            // overflow: hidden; 
+            width: 16.6666667%;
+            height: 100%;
+            flex: 0 0 auto;
+            background-size: cover;
+            background-position: center center;
+        }
+    }
+
+    & .slider.animated {
+        transition: left .3s ease-in;
+    }
+
+    & .prevBtn.disabled, & .nextBtn.disabled { display: none; }
+}
