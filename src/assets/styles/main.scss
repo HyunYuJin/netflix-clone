@@ -34,43 +34,77 @@ nav {
     }
 }
 
-// home.html
-.slide-container {
+// index.html
+.main {
     position: relative;
-    width: 100%;
-    overflow: hidden;
-    height: 200px;
-    // display: flex;
-    // flex-direction: column;
+    min-height: 100vh;
 
-    & .slider {
-        // position: absolute;
-        // width: 100%;
-        display: flex;
-        flex-wrap: nowrap;
-        overflow: hidden;
+    & > div {
+        position: relative;
+        top: 0;
         width: 100%;
-        height: 100%;
+    }
+}
 
-        & .slider-item {
-            // position: absolute;
-            // width: 100%;
-            // padding: 0 10%;
-            // box-sizing: border-box;
-            // top: 50%;
-            // transform: translateY(-50%);
-            // overflow: hidden; 
-            width: 16.6666667%;
+// home.html
+.mainBanner {
+    padding: 0 3%;
+    
+    & h2 {
+        margin-bottom: 1rem;
+        color: #e5e5e5;
+    }
+
+    & .slide-wrap {
+        position: relative;
+        width: 100%;
+
+        & .slide-box {
+            width: 100%;
+            float: left;
+            margin: auto;
+            overflow-x: hidden;
+    
+            & .slide-content {
+                // display: table;
+                float: left;
+                width: 5%;
+                // height: 200px;
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: left;
+                border-radius: 5px;
+
+                & .slider-detail {
+                    display: none;
+                }
+
+                & .slider-detail.hover {
+                    display: inline-block;
+                }
+            }
+        }
+
+        & .slide-btn {
+            clear: both;
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            width: 100%;
             height: 100%;
-            flex: 0 0 auto;
-            background-size: cover;
-            background-position: center center;
+
+            & .prevBtn {
+                left: 0;
+            }
+
+            & .nextBtn {
+                position: absolute;
+                right: 0;
+            }
         }
     }
+}
 
-    & .slider.animated {
-        transition: left .3s ease-in;
-    }
-
-    & .prevBtn.disabled, & .nextBtn.disabled { display: none; }
+.hide {
+    display: none;
 }
