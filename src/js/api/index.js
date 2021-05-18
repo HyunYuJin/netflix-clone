@@ -2,21 +2,28 @@ const API_URL = 'https://api.themoviedb.org/3'
 const API_KEY = '0e6d860fdb93125a12911f42a73dd701'
 const BASE_IMAGE_URL = 'https://image.tmdb.org/t/p/w500/'
 
+const _fetch = (path, query) => {
+    return window.fetch(`${API_URL + path}?api_key=${API_KEY}&language=ko&${query}`)
+    .then(res => res.json())
+} 
+
 export const tmdb = {
     API_URL,
     API_KEY,
     BASE_IMAGE_URL,
 
-    // https://api.themoviedb.org/3/movie/popular?
+    // https://api.themoviedb.org/3/movie/popular
     getPopularMovie () {
-        return window.fetch(`${API_URL}/movie/popular?api_key=${API_KEY}`)
-            .then(res => res.json())
+        return _fetch(`/movie/popular`)
     },
 
-    // https://api.themoviedb.org/3/movie/{id}?
+    // https://api.themoviedb.org/3/movie/{id}
     getVideo(id) {
         return window.fetch(`${API_URL}/movie/${id}/videos?api_key=${API_KEY}`)
-            .then(res => res.json())
+    },
+
+    // https://developers.themoviedb.org/3/discover/movie-discover  
+    getGenre (id) {
+        return _fetch(`/discover/movie`, `sort_by=popularity.desc&region=KR&with_genres=${id}`)
     }
 }
-

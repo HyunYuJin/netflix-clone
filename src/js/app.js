@@ -4,7 +4,7 @@ import routes from './router/routes'
 
 // DOM 구분해주기
 const DOM = {
-    container: document.getElementById('container')
+    container: document.getElementById('main')
     // navLinks: document.querySelectorAll('.nav-links > a')
 }
 // 이런식으로 구분해주기도 한다.
