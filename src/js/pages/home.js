@@ -1,5 +1,6 @@
 import View from './view'
 import template from '../../components/home.html'
+import dialog from '../../components/dialog.html'
 import { tmdb } from '../api/index'
 
 class Home extends View {
@@ -20,6 +21,7 @@ class Home extends View {
 
         this.slideWidth = 16.6666667
         this.slideLength = 0
+        this.isDialog = null
     }
 
     mounted() {
@@ -49,6 +51,7 @@ class Home extends View {
             child[i].addEventListener('mouseenter', (e) => {
                 e.target.classList.add('hover')
             })
+            child[i].insertAdjacentHTML('beforeend', dialog)
         }
     }
 
@@ -58,6 +61,9 @@ class Home extends View {
         const child = target.children
 
         for (let i = 0; i < child.length; i++) {
+            // dialog-wrap 지우기
+            child[i].removeChild(child[i].lastChild)
+
             child[i].addEventListener('mouseleave', (e) => {
                 e.target.classList.remove('hover')
             })
