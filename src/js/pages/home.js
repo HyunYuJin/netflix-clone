@@ -40,14 +40,28 @@ class Home extends View {
         }
     }
 
-    // 이벤트 위임 방식 사용하기
+    // 이벤트 위임 방식 사용
     _getSliderMouseEnter(e) {
-        const child = e.currentTarget.children[0]
-        console.log(child)
+        const target = e.target
+        const child = target.children
+
+        for (let i = 0; i < child.length; i++) {
+            child[i].addEventListener('mouseenter', (e) => {
+                e.target.classList.add('hover')
+            })
+        }
     }
 
+    // 이벤트 위임 방식 사용
     _getSliderMousLeave(e) {
-        console.log('leave')
+        const target = e.target
+        const child = target.children
+
+        for (let i = 0; i < child.length; i++) {
+            child[i].addEventListener('mouseleave', (e) => {
+                e.target.classList.remove('hover')
+            })
+        }
     }
 
     _render (element, movieList) {
@@ -66,11 +80,13 @@ class Home extends View {
                 </div>
             `)
 
-            this.DOM.slideBox.addEventListener('mouseenter', this._getSliderMouseEnter)
-            this.DOM.slideBox.addEventListener('mouseleave', this._getSliderMousLeave)
-
+            
             // 이미지 지연 로딩
             if (isLast) this.lazyLoad(this.$element.querySelectorAll('.lazy-load'))
+
+            const parent = document.querySelector('.slide-content').parentNode
+            parent.addEventListener('mouseenter', this._getSliderMouseEnter)
+            parent.addEventListener('mouseleave', this._getSliderMousLeave)
         })
 
     }
