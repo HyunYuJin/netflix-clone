@@ -54,6 +54,7 @@
         position: relative;
         display: flex;
         flex-direction: column;
+        flex-wrap: wrap;
         justify-content: space-evenly;
         height: 100px;
         padding: 0.8rem 1rem;

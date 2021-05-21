@@ -121,7 +121,7 @@ class Home extends View {
                             </div>
                 
                             <div class="dialog-info">
-                                <span>${movie.title}</span>
+                                <p>${movie.title}</p>
                                 <div class="dialog-info-detail">
                                     <div>${movie.release_date}</div>
                                     <div>${movie.popularity}</div>
@@ -132,12 +132,12 @@ class Home extends View {
                 `)
             })
 
-            slideContent.addEventListener('mouseleave', event => {
-                const target = event.target
-                const $dialogWrap = target.querySelector('.dialog-wrap')
-                // target.removeChild(target.lastChild)
-                target.removeChild($dialogWrap)
-            })
+            // slideContent.addEventListener('mouseleave', event => {
+            //     const target = event.target
+            //     const $dialogWrap = target.querySelector('.dialog-wrap')
+            //     // target.removeChild(target.lastChild)
+            //     target.removeChild($dialogWrap)
+            // })
         })
 
     }
