@@ -132,12 +132,12 @@ class Home extends View {
                 `)
             })
 
-            // slideContent.addEventListener('mouseleave', event => {
-            //     const target = event.target
-            //     const $dialogWrap = target.querySelector('.dialog-wrap')
-            //     // target.removeChild(target.lastChild)
-            //     target.removeChild($dialogWrap)
-            // })
+            slideContent.addEventListener('mouseleave', event => {
+                const target = event.target
+                const $dialogWrap = target.querySelector('.dialog-wrap')
+                // target.removeChild(target.lastChild)
+                target.removeChild($dialogWrap)
+            })
         })
 
     }
