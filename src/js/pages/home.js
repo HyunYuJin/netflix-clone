@@ -42,6 +42,12 @@ class Home extends View {
         }
     }
 
+    _initEvent() {
+        // this.DOM.slideList.addEventListener('mouseleave', (event) => {
+
+        // })
+     }
+
     // 이벤트 위임 방식 사용
     _getSliderMouseEnter(e) {
         const target = e.target
@@ -49,9 +55,9 @@ class Home extends View {
 
         for (let i = 0; i < child.length; i++) {
             child[i].addEventListener('mouseenter', (e) => {
-                e.target.classList.add('hover')
+                // e.target.classList.add('hover')
             })
-            child[i].insertAdjacentHTML('beforeend', dialog)
+            // child[i].insertAdjacentHTML('beforeend', dialog)
         }
     }
 
@@ -62,10 +68,10 @@ class Home extends View {
 
         for (let i = 0; i < child.length; i++) {
             // dialog-wrap 지우기
-            child[i].removeChild(child[i].lastChild)
+            // child[i].removeChild(child[i].lastChild)
 
             child[i].addEventListener('mouseleave', (e) => {
-                e.target.classList.remove('hover')
+                // e.target.classList.remove('hover')
             })
         }
     }
@@ -90,9 +96,45 @@ class Home extends View {
             // 이미지 지연 로딩
             if (isLast) this.lazyLoad(this.$element.querySelectorAll('.lazy-load'))
 
-            const parent = document.querySelector('.slide-content').parentNode
-            parent.addEventListener('mouseenter', this._getSliderMouseEnter)
-            parent.addEventListener('mouseleave', this._getSliderMousLeave)
+            const children = element.children
+            const slideContent = children[children.length - 1]
+
+            slideContent.addEventListener('mouseenter', event => {
+                const target = event.target
+
+                target.insertAdjacentHTML('beforeend', `
+                    <div class="dialog-wrap">
+                        <div class="dialog">
+                            <div class="dialog-player-container">
+                                <div class="vedio">adfadf</div>
+                                <div class="vedio-img"><img src="${tmdb.BASE_IMAGE_URL + movie.backdrop_path}" alt="${movie.title} 이미지" /></div>
+                                <div class="palyer-action-wrap">
+                                    <!-- icon -->
+                                </div>
+                            </div>
+                
+                            <div class="close-btn">
+                                <svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Close</title><path fill='#FFF' stroke='#FFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='32' d='M368 368L144 144M368 144L144 368'/></svg>
+                            </div>
+                
+                            <div class="dialog-info">
+                                <span>${movie.title}</span>
+                                <div>
+                                    <p>${movie.release_date}</p>
+                                    <p>${movie.popularity}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `)
+            })
+
+            // slideContent.addEventListener('mouseleave', event => {
+            //     const target = event.target
+            //     const $dialogWrap = target.querySelector('.dialog-wrap')
+            //     // target.removeChild(target.lastChild)
+            //     target.removeChild($dialogWrap)
+            // })
         })
 
     }
