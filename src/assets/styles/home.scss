@@ -60,6 +60,7 @@
 
             .slide-content:hover {
                 transform: scale(1.2);
+                transition: all 0.7s;
                 z-index: 2;
             }
         }
