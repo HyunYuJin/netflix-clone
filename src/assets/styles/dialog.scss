@@ -65,10 +65,11 @@
         height: 100px;
         padding: 0.8rem 1rem;
         padding-top: 0;
-        font-size: 0.8rem;
-
-        > span {
-            font-size: 1.1rem;
+        font-size: 0.6rem;
+        
+        > p {
+            white-space: break-spaces;
+            font-size: 0.8rem;
         }
 
         .dialog-info-detail {
@@ -102,7 +103,6 @@
         overflow: hidden;
 
         .dialog-player-container {
-            
             .player-action-wrap {
                 position: absolute;
                 width: 50%;
@@ -116,5 +116,14 @@
         width: 40px;
         display: block;
         cursor: pointer;
+    }
+
+    .dialog-info {
+        font-size: 0.8rem;
+        
+        > p {
+            white-space: break-spaces;
+            font-size: 1.2rem;
+        }
     }
 }

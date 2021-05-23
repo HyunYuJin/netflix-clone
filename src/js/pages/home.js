@@ -67,7 +67,7 @@ class Home extends View {
             if (!this.DOM.mainBanner.classList.contains('full')) {
                 // this.DOM.mainBanner.classList.add('full')
                 this.DOM.mainBanner.insertAdjacentHTML('afterbegin', dialog.FullDialog(event, imgurl, { movie }))
-                
+
                 const $closeBtn = this.$element.querySelector('.close-btn')
                 this._getSliderClickClose($closeBtn)
             }
