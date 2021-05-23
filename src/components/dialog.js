@@ -13,10 +13,6 @@ export const dialog ={
                     </div>
                 </div>
                         
-                <div class="close-btn">
-                    <svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Close</title><path fill='#FFF' stroke='#FFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='32' d='M368 368L144 144M368 144L144 368'/></svg>
-                </div>
-                        
                 <div class="dialog-info">
                     <p>${movie.title}</p>
                     <div class="dialog-info-detail">

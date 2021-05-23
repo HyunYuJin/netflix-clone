@@ -45,6 +45,7 @@ class Home extends View {
     _getSliderMouseEnter(slideContent, imgurl, { movie }) {
         slideContent.addEventListener('mouseenter', event => {
             let target = event.target
+            console.log(target)
 
             if (!target.classList.contains('dialog-wrap')) {
                 target.insertAdjacentHTML('beforeend', dialog.Dialog(event, imgurl, { movie }))
@@ -64,24 +65,19 @@ class Home extends View {
     _getSliderClick(slideContent, imgurl, { movie }) {
         slideContent.addEventListener('click', event => {
             if (!this.DOM.mainBanner.classList.contains('full')) {
-                this.DOM.mainBanner.classList.add('full')
-                this.DOM.mainBanner.insertAdjacentHTML('beforeend', dialog.FullDialog(event, imgurl, { movie }))
-    
-                // for(;target.className != 'main' ; target = target.parentElement);
-                // if (!target.classList.contains('full')) target.classList.add('full')
-
-                const $closeBtn = this.$element.querySelector('.close-btn')
+                // this.DOM.mainBanner.classList.add('full')
+                this.DOM.mainBanner.insertAdjacentHTML('afterbegin', dialog.FullDialog(event, imgurl, { movie }))
                 
-                // 왜 클릭이 안될까유..
+                const $closeBtn = this.$element.querySelector('.close-btn')
                 this._getSliderClickClose($closeBtn)
             }
         })
     }
 
     _getSliderClickClose(closeBtn) {
-        closeBtn.addEventListener('click', event => {
-            const $dialogWrap = target.querySelector('.dialog-wrap')
-            this.DOM.mainBanner.remove($dialogWrap)
+        closeBtn.addEventListener('click', () => {
+            const $dialogWrap = this.DOM.mainBanner.querySelector('.dialog-wrap')
+            this.DOM.mainBanner.removeChild($dialogWrap)
         })
     }
 
