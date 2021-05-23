@@ -26,15 +26,63 @@
                 padding: 0.5rem 1rem;
                 padding-bottom: 0;
                 align-items: center;
-                justify-content: space-between;
+                height: 2.4rem;
+
+                > * {
+                    margin: 0.5rem;
+                    margin-left: 0;
+                }
                 
-                & > a {
+                > a {
                     display: block;
-                    width: 20%;
+                    width: 2.4rem;
+                    height: 2.4rem;
+
+                    > button {
+                        height: 100%;
+                        width: 100%;
+                        border: 2px solid #FFF;
+                        background-color: #FFF;
+                        border-radius: 50%;
+                        cursor: pointer;
+
+                        > div {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            
+
+                            > svg {
+                                width: 2rem;
+                            }
+                        }
+                    }
                 }
 
-                & > div {
-                    width: 20%;
+                > div {
+                    display: flex;
+                    width: 2.4rem;
+                    height: 2.4rem;
+
+                    > button {
+                        height: 100%;
+                        width: 100%;
+                        border: 2px solid #FFF;
+                        background-color: rgba(42, 42, 42, .6);
+                        border-radius: 50%;
+                        cursor: pointer;
+
+                        > div {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            
+
+                            > svg {
+                                width: 2rem;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -105,8 +153,29 @@
         .dialog-player-container {
             .player-action-wrap {
                 position: absolute;
-                width: 50%;
-                top: 70%;
+                top: 80%;
+
+                > a {
+                    width: 100px;
+                    height: 100%;
+
+                    .play-btn {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        opacity: 1;
+                        padding: 0.8rem;
+                        background-color: #FFF;
+                        color: #000;
+                        border: 0;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        
+                        * {
+                            flex: 1;
+                        }
+                    }
+                }
             }
             
         }

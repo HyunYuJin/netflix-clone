@@ -45,7 +45,6 @@ class Home extends View {
     _getSliderMouseEnter(slideContent, imgurl, { movie }) {
         slideContent.addEventListener('mouseenter', event => {
             let target = event.target
-            console.log(target)
 
             if (!target.classList.contains('dialog-wrap')) {
                 target.insertAdjacentHTML('beforeend', dialog.Dialog(event, imgurl, { movie }))
