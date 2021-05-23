@@ -42,38 +42,47 @@ class Home extends View {
         }
     }
 
-    _initEvent() {
-        // this.DOM.slideList.addEventListener('mouseleave', (event) => {
+    _getSliderMouseEnter(slideContent, imgurl, { movie }) {
+        slideContent.addEventListener('mouseenter', event => {
+            let target = event.target
 
-        // })
-     }
-
-    // 이벤트 위임 방식 사용
-    _getSliderMouseEnter(e) {
-        const target = e.target
-        const child = target.children
-
-        for (let i = 0; i < child.length; i++) {
-            child[i].addEventListener('mouseenter', (e) => {
-                // e.target.classList.add('hover')
-            })
-            // child[i].insertAdjacentHTML('beforeend', dialog)
-        }
+            if (!target.classList.contains('dialog-wrap')) {
+                target.insertAdjacentHTML('beforeend', dialog.Dialog(event, imgurl, { movie }))
+            }
+        });
     }
 
-    // 이벤트 위임 방식 사용
-    _getSliderMousLeave(e) {
-        const target = e.target
-        const child = target.children
+    _getSliderMousLeave(slideContent) {
+        slideContent.addEventListener('mouseleave', event => {
+            const target = event.target
+            const $dialogWrap = target.querySelector('.dialog-wrap')
+            
+            target.removeChild($dialogWrap)
+        })
+    }
 
-        for (let i = 0; i < child.length; i++) {
-            // dialog-wrap 지우기
-            // child[i].removeChild(child[i].lastChild)
+    _getSliderClick(slideContent, imgurl, { movie }) {
+        slideContent.addEventListener('click', event => {
+            if (!this.DOM.mainBanner.classList.contains('full')) {
+                this.DOM.mainBanner.classList.add('full')
+                this.DOM.mainBanner.insertAdjacentHTML('beforeend', dialog.FullDialog(event, imgurl, { movie }))
+    
+                // for(;target.className != 'main' ; target = target.parentElement);
+                // if (!target.classList.contains('full')) target.classList.add('full')
 
-            child[i].addEventListener('mouseleave', (e) => {
-                // e.target.classList.remove('hover')
-            })
-        }
+                const $closeBtn = this.$element.querySelector('.close-btn')
+                
+                // 왜 클릭이 안될까유..
+                this._getSliderClickClose($closeBtn)
+            }
+        })
+    }
+
+    _getSliderClickClose(closeBtn) {
+        closeBtn.addEventListener('click', event => {
+            const $dialogWrap = target.querySelector('.dialog-wrap')
+            this.DOM.mainBanner.remove($dialogWrap)
+        })
     }
 
     _render (element, movieList) {
@@ -92,7 +101,6 @@ class Home extends View {
                 </div>
             `)
 
-            
             // 이미지 지연 로딩
             if (isLast) this.lazyLoad(this.$element.querySelectorAll('.lazy-load'))
 
@@ -100,21 +108,9 @@ class Home extends View {
             const slideContent = children[children.length - 1]
             const imgurl = tmdb.BASE_IMAGE_URL + movie.backdrop_path
 
-            slideContent.addEventListener('mouseenter', (event) => dialog.Dialog(event, imgurl, { movie }));
-
-            // slideContent.addEventListener('mouseleave', event => {
-            //     const target = event.target
-            //     const $dialogWrap = target.querySelector('.dialog-wrap')
-                
-            //     if (!$dialogWrap.classList.contains('full')) target.removeChild($dialogWrap)
-            // })
-            
-            // slideContent.addEventListener('click', event => {
-            //     let target = event.target
-
-            //     for(;target.className != 'dialog-wrap' ; target=target.parentElement);
-            //     target.classList.add('full')
-            // })
+            this._getSliderMouseEnter(slideContent, imgurl, { movie })
+            this._getSliderMousLeave(slideContent)
+            this._getSliderClick(slideContent, imgurl, { movie })
         })
     }
 

@@ -41,6 +41,10 @@
 
         .video-img {
             width: 100%;
+
+            img {
+                width: 100%;
+            }
         }
     }
 
@@ -74,7 +78,7 @@
     }
 }
 
-.dialog-wrap.full {
+.dialog-wrap.full  {
     position: fixed;
     width: 100%;
     height: 100%;
