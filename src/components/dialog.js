@@ -1,5 +1,5 @@
 export const dialog ={
-    Dialog(event, imgurl, { movie }) {
+    small(imgurl, { movie }, event) {
         return `<div class="dialog-wrap">
             <div class="dialog">
                 <div class="dialog-player-container">
@@ -32,7 +32,7 @@ export const dialog ={
         </div>`
     },
 
-    FullDialog(event, imgurl, { movie }) {
+    large(imgurl, { movie }, event) {
         return `<div class="dialog-wrap full">
             <div class="dialog">
                 <div class="dialog-player-container">

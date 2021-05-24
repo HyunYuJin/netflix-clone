@@ -1,7 +1,8 @@
 import View from './view'
 import template from '../../components/home.html'
 import { tmdb } from '../api/index'
-import {dialog} from '../../components/dialog'
+import { dialog } from '../../components/dialog'
+import Swiper from '../lib/swiper'
 
 class Home extends View {
     constructor() {
@@ -15,6 +16,7 @@ class Home extends View {
             slideBox: this.$element.querySelector('.slide-box'),
             slideList: this.$element.querySelectorAll('.slide-list'),
             slideContents: null,
+            slideBtn: this.$element.querySelector('.slide-btn'),
             prevBtn: this.$element.querySelector('.prevBtn'),
             nextBtn: this.$element.querySelector('.nextBtn'),
         }
@@ -42,42 +44,36 @@ class Home extends View {
         }
     }
 
-    _getSliderMouseEnter(slideContent, imgurl, { movie }) {
-        slideContent.addEventListener('mouseenter', event => {
-            let target = event.target
+    _onSliderMouseEnter(imgurl, { movie }, event) {
+        let target = event.target
 
-            if (!target.classList.contains('dialog-wrap')) {
-                target.insertAdjacentHTML('beforeend', dialog.Dialog(event, imgurl, { movie }))
-            }
-        });
+        if (!target.classList.contains('dialog-wrap')) {
+            target.insertAdjacentHTML('beforeend', dialog.small(imgurl, { movie }, event))
+        }
     }
 
-    _getSliderMousLeave(slideContent) {
-        slideContent.addEventListener('mouseleave', event => {
-            const target = event.target
-            const $dialogWrap = target.querySelector('.dialog-wrap')
+    _onSliderMousLeave(event) {
+        const target = event.target
+        const $dialogWrap = target.querySelector('.dialog-wrap')
+        
+        target.removeChild($dialogWrap)
+    }
+
+    _onSliderClick(imgurl, { movie }, event) {
+        if (!this.DOM.mainBanner.classList.contains('full')) {
+            this.DOM.mainBanner.insertAdjacentHTML('afterbegin', dialog.large(imgurl, { movie }, event))
+
+            const $closeBtn = this.$element.querySelector('.close-btn')
             
-            target.removeChild($dialogWrap)
-        })
+            $closeBtn.addEventListener('click', () => {
+                this._onSliderClickClose()
+            })
+        }
     }
 
-    _getSliderClick(slideContent, imgurl, { movie }) {
-        slideContent.addEventListener('click', event => {
-            if (!this.DOM.mainBanner.classList.contains('full')) {
-                // this.DOM.mainBanner.classList.add('full')
-                this.DOM.mainBanner.insertAdjacentHTML('afterbegin', dialog.FullDialog(event, imgurl, { movie }))
-
-                const $closeBtn = this.$element.querySelector('.close-btn')
-                this._getSliderClickClose($closeBtn)
-            }
-        })
-    }
-
-    _getSliderClickClose(closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            const $dialogWrap = this.DOM.mainBanner.querySelector('.dialog-wrap')
-            this.DOM.mainBanner.removeChild($dialogWrap)
-        })
+    _onSliderClickClose() {
+        const $dialogWrap = this.DOM.mainBanner.querySelector('.dialog-wrap')
+        this.DOM.mainBanner.removeChild($dialogWrap)
     }
 
     _render (element, movieList) {
@@ -103,9 +99,24 @@ class Home extends View {
             const slideContent = children[children.length - 1]
             const imgurl = tmdb.BASE_IMAGE_URL + movie.backdrop_path
 
-            this._getSliderMouseEnter(slideContent, imgurl, { movie })
-            this._getSliderMousLeave(slideContent)
-            this._getSliderClick(slideContent, imgurl, { movie })
+            slideContent.addEventListener('mouseenter', this._onSliderMouseEnter.bind(this, imgurl, { movie }))
+            slideContent.addEventListener('mouseleave', this._onSliderMousLeave.bind(this))
+            slideContent.addEventListener('click', this._onSliderClick.bind(this, imgurl, { movie }))
+        })
+
+        const swiper = new Swiper(element, {
+            navigation: {
+                prevEl: this.DOM.prevBtn,
+                nextEl: this.DOM.nextBtn
+            }
+        })
+
+        swiper.on('started', () => {
+            this.DOM.slideBtn.classList.add('started')
+        })
+        
+        swiper.on('update', (index) => {
+            console.log(swiper.current)
         })
     }
 
