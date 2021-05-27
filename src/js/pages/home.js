@@ -13,12 +13,10 @@ class Home extends View {
 
         this.DOM = {
             mainBanner: this.$element.querySelector('.mainBanner'),
-            slideBox: this.$element.querySelector('.slide-box'),
-            slideList: this.$element.querySelectorAll('.slide-list'),
+            slideInner: this.$element.querySelector('.slide-inner'),
+            slideContainer: this.$element.querySelectorAll('.slide-wrapper'),
             slideContents: null,
             slideBtn: this.$element.querySelector('.slide-btn'),
-            prevBtn: this.$element.querySelector('.prevBtn'),
-            nextBtn: this.$element.querySelector('.nextBtn'),
         }
 
         this.slideWidth = 16.6666667
@@ -33,8 +31,8 @@ class Home extends View {
     }
 
     _initDOM() {
-        for (let i = 0; i < this.DOM.slideList.length; i++) {
-            this.DOM.slideList[i].insertAdjacentHTML('beforeend', `
+        for (let i = 0; i < this.DOM.slideContainer.length; i++) {
+            this.DOM.slideContainer[i].insertAdjacentHTML('beforeend', `
                 <div class="slide-content">
                     <a href="/">
                         <div class="init-div">&nbsp;</div>
@@ -104,15 +102,19 @@ class Home extends View {
             slideContent.addEventListener('click', this._onSliderClick.bind(this, imgurl, { movie }))
         })
 
+        this._setupSwipe(element)
+    }
+
+    _setupSwipe(element) {
         const swiper = new Swiper(element, {
             navigation: {
-                prevEl: this.DOM.prevBtn,
-                nextEl: this.DOM.nextBtn
+                prevEl: element.parentNode.querySelector('.prevBtn'),
+                nextEl: element.parentNode.querySelector('.nextBtn'),
             }
         })
 
         swiper.on('started', () => {
-            this.DOM.slideBtn.classList.add('started')
+            element.parentNode.classList.add('started')
         })
         
         swiper.on('update', (index) => {
@@ -126,88 +128,8 @@ class Home extends View {
         .then(data => {
             // 인기가 많은 순서대로 정렬
             const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
-            const popular = this.$element.querySelector('.popular')
+            const popular = this.$refs.popular
             this._render(popular, movieList)
-
-            // this.DOM.slideList.style.width = this.slideWidth * movieList.length + '%'
-
-            // movieList.forEach((movie, index) => {
-            //     const isLast = (index === movieList.length - 1)
-
-            //     const $sliderItem = document.createElement('div')
-            //     $sliderItem.className = 'slide-content'
-            //     $sliderItem.innerHTML = `<img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.backdrop_path} />`
-            //     this.DOM.slideList.appendChild($sliderItem)
-            //     $sliderItem.setAttribute('data-id', movie.id)
-
-            //     // 마우스 hover 했을 때 영화에 대한 자세한 정보를 담고 있는 부분
-            //     const $sliderItemDetail = document.createElement('div')
-            //     $sliderItemDetail.className = 'slider-detail'
-            //     $sliderItem.appendChild($sliderItemDetail)
-
-            //     // original_title, overview, release_date
-            //     const movieTitle = document.createElement('h4')
-            //     const movieOverview = document.createElement('p')
-            //     const movieReleaseDate = document.createElement('span')
-
-            //     movieTitle.innerHTML = movie.original_title
-            //     movieOverview.innerHTML = movie.overview
-            //     movieReleaseDate.innerHTML = movie.release_date
-
-            //     $sliderItemDetail.appendChild(movieTitle)
-            //     $sliderItemDetail.appendChild(movieOverview)
-            //     $sliderItemDetail.appendChild(movieReleaseDate)
-
-            //     $sliderItem.addEventListener('mouseenter', () => {
-            //         $sliderItemDetail.classList.add('hover')
-            //         // this._videoPlay($sliderItemDetail[index].getAttribute('data-id'))
-            //     })
-            //     $sliderItem.addEventListener('mouseleave', () => {
-            //         $sliderItemDetail.classList.remove('hover')
-            //     })
-
-            //     // 이미지 지연 로딩
-            //     if (isLast) this.lazyLoad(this.$element.querySelectorAll('.lazy-load'))
-            // })
-            
-            // this.DOM.slideContents = document.querySelectorAll('.slide-content')
-            // const slideLength = this.DOM.slideContents.length
-
-            // let currentIndex = 0
-            // if (currentIndex === 0) {
-            //     this.DOM.prevBtn.classList.add('hide')
-            // }
-
-            // // next Button
-            // this.DOM.nextBtn.addEventListener('click', () => {
-            //     if (currentIndex <= slideLength - 1) {
-            //         this.DOM.prevBtn.classList.remove('hide')
-            //         this.DOM.slideList.style.transform = 'translate3d(-' + (5 * (currentIndex + 1)) + '%, 0px, 0px)'
-            //     }
-                
-            //     if (currentIndex == slideLength - 2) {
-            //         currentIndex = 0
-            //     } else {
-            //         currentIndex++
-            //     }
-
-            //     console.log(currentIndex, slideLength - 1)
-            // })
-            
-            // // prev Button
-            // this.DOM.prevBtn.addEventListener('click', () => {
-            //     if (currentIndex > 0) {
-            //         this.DOM.slideList.style.transform = 'translate3d(-' + (5 * (currentIndex - 1)) + '%, 0px, 0px)'
-            //     }
-                
-            //     if (currentIndex == 0) {
-            //         currentIndex = slideLength - 1
-            //     } else {
-            //         currentIndex--
-            //     }
-                
-            //     console.log(currentIndex, slideLength - 1)
-            // })
         })
         .catch(err => {
             console.log('Fetch Error', err);
@@ -218,7 +140,7 @@ class Home extends View {
         await tmdb.getGenre(16)
         .then(data => {
             const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
-            const kids = this.$element.querySelector('.kids')
+            const kids = this.$refs.kids
             this._render(kids, movieList)
         })
     }

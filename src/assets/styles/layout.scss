@@ -46,6 +46,10 @@ main {
     // display: flex;
     position: relative;
     min-height: 100vh;
+
+    .slide-inner {
+        position: relative;
+    }
 }
 
 footer {

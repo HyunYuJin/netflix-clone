@@ -3,6 +3,7 @@
 
 class View {
     constructor(attr) {
+        this.$refs = {}
         this.$element = this._createElement(attr)
     }
 
@@ -46,10 +47,18 @@ class View {
             // 요소가 늘어날지라도 동적으로 생성해준다.
             keys.forEach((key) => {
                 div[key] = attr[key]
-                // div.innerHTML = attr.innerHTML
-                // div.className = attr.className
             })
         }
+
+        const refs = Array.from(div.querySelectorAll('[ref]'))
+
+        for (const elem of refs) {
+            const key = elem.getAttribute('ref')
+            this.$refs[key] = elem
+
+            elem.removeAttribute('ref')
+        }
+
         return div
     }
 }

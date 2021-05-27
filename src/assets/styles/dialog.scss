@@ -7,6 +7,7 @@
     overflow: hidden;
     transform: scale(1.2);
     transition: all 0.7s;
+    z-index: 9;
 
     .dialog {
         position: relative;
