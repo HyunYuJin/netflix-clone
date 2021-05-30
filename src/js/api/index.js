@@ -13,8 +13,13 @@ export const tmdb = {
     BASE_IMAGE_URL,
 
     // https://api.themoviedb.org/3/movie/popular
-    getPopularMovie () {
+    getPopularMovie() {
         return _fetch(`/movie/popular`)
+    },
+
+    // https://developers.themoviedb.org/3/movies/get-movie-details
+    getMovieDetails(id) {
+        return _fetch(`/movie/${id}`, 'append_to_response=similar')
     },
 
     // https://api.themoviedb.org/3/movie/{id}
@@ -23,7 +28,7 @@ export const tmdb = {
     },
 
     // https://developers.themoviedb.org/3/discover/movie-discover  
-    getGenre (id) {
+    getGenre(id) {
         return _fetch(`/discover/movie`, `sort_by=popularity.desc&region=KR&with_genres=${id}`)
     }
 }

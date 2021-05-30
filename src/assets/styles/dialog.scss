@@ -197,3 +197,34 @@
         }
     }
 }
+
+
+// preview 개선
+.preview-wrap {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 9;
+    pointer-events: none;
+
+    &.small-expanded {
+        position: absolute;
+
+        .preview {
+            opacity: 1;
+        }
+    }
+
+    .preview {
+        position: relative;
+        width: 90%;
+        overflow: hidden;
+        max-width: 1024px;
+        border-radius: 5px;
+        opacity: 0;
+        background-color: #181818;
+        color: #FFF;
+    }
+}
