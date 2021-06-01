@@ -1,0 +1,21 @@
+.preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    pointer-events: none; // preview가 뜨기전에는 클릭되면 안된다.
+
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 56px 0;
+}
+
+.preview-inner {
+    width: 90%;
+    max-width: 1024px;
+    transform-origin: center top;
+    // background: pink;
+    // opacity: 0;
+}

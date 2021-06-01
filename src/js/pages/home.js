@@ -1,7 +1,6 @@
 import View from './view'
 import template from '../../components/home.html'
 import { tmdb } from '../api/index'
-import { dialog } from '../../components/dialog'
 import Swiper from '../lib/swiper'
 import SharedTransition from '../lib/shared-transition'
 
@@ -39,38 +38,6 @@ class Home extends View {
         }
     }
 
-    _onSliderMouseEnter(imgurl, { movie }, event) {
-        let target = event.target
-
-        if (!target.classList.contains('dialog-wrap')) {
-            target.insertAdjacentHTML('beforeend', dialog.small(imgurl, { movie }, event))
-        }
-    }
-
-    _onSliderMousLeave(event) {
-        const target = event.target
-        const $dialogWrap = target.querySelector('.dialog-wrap')
-        
-        target.removeChild($dialogWrap)
-    }
-
-    _onSliderClick(imgurl, { movie }, event) {
-        if (!this.DOM.mainBanner.classList.contains('full')) {
-            this.DOM.mainBanner.insertAdjacentHTML('afterbegin', dialog.large(imgurl, { movie }, event))
-
-            const $closeBtn = this.$element.querySelector('.close-btn')
-            
-            $closeBtn.addEventListener('click', () => {
-                this._onSliderClickClose()
-            })
-        }
-    }
-
-    _onSliderClickClose() {
-        const $dialogWrap = this.DOM.mainBanner.querySelector('.dialog-wrap')
-        this.DOM.mainBanner.removeChild($dialogWrap)
-    }
-
     _render (element, movieList) {
         return new Promise((resolve, reject) => {
             while (element.hasChildNodes()) {
@@ -87,14 +54,6 @@ class Home extends View {
                         </a>
                     </div>
                 `)
-    
-                const children = element.children
-                const slideContent = children[children.length - 1]
-                const imgurl = tmdb.BASE_IMAGE_URL + movie.backdrop_path
-    
-                // slideContent.addEventListener('mouseenter', this._onSliderMouseEnter.bind(this, imgurl, { movie }))
-                // slideContent.addEventListener('mouseleave', this._onSliderMousLeave.bind(this))
-                // slideContent.addEventListener('click', this._onSliderClick.bind(this, imgurl, { movie }))
                 
                 if (isLast) {
                     this._setupSwipe(element)
@@ -118,16 +77,22 @@ class Home extends View {
                 }
             })
 
-            images.forEach(item=> {
-                item.addEventListener('mouseenter', (event) => {
-                    setTimeout(() => {
-                        this._showSmallPreview(event)
-                    }, 200)
-                })
+            const mouseenterFn = (evnet) => {
+                this._showSmallPreview(event)
+            }
 
-                item.addEventListener('mouseleave', (event) => {
-                    clearTimeout(0)
-                })
+            const mouseleaveFn = (event) => {
+
+            }
+
+            const clickFn = (event) => {
+                this._showPreview(event)
+            }
+
+            images.forEach(item => {
+                // item.addEventListener('mouseenter', mouseenterFn)
+                // item.addEventListener('mouseleave', mouseleaveFn)
+                item.addEventListener('click', clickFn)
             })
 
             swiper.on('started', () => {
@@ -144,38 +109,31 @@ class Home extends View {
 
     async _showSmallPreview(event) {
         const fromEl = event.target
+        const bounds = fromEl.getBoundingClientRect()
+        console.log(bounds)
+    }
+    
+    async _showPreview(event) {
+        const fromEl = event.target
         const toEl = this.$refs.preview
-        const id = fromEl.closest('[data-id]').dataset.id
-        const result = await tmdb.getMovieDetails(id)
 
-        const st = new SharedTransition({
+        // const id = fromEl.closest('[data-id]').dataset.id
+        // const result = await tmdb.getMovieDetails(id)
+
+        // preview의 위치와 움직일 preview-inner를 저장해주어야하기 때문에 값을 넘겨주어야 한다.
+        const sharedTransition = new SharedTransition({
             from: fromEl,
             to: toEl,
             duration: '0.24s'
         })
 
-        const { previewSmall } = this.$refs
-        const smallSrc = fromEl.getAttribute('src') // mouseenter한 현재 이미지
-
+        // click한 이미지의 src 넘겨주기
         const beforePlayStart = () => {
-            toEl.parentNode.classList.add('small-expanded')
-            previewSmall.src = smallSrc
-
-            toEl.addEventListener('mouseleave', () => {
-                st.reverse()
-                console.log('leave??????')
-            }, { once: true }) // once: 이벤트를 한번만 호출하고 해제시키는 옵션
+            this.$refs.smallImage.src = fromEl.src
         }
 
-        const afterReverseEnd = () => {
-            previewSmall.src = ''
-      
-            toEl.parentNode.classList.remove('small-expanded')
-        }
-
-        st.on('beforePlayStart', beforePlayStart)
-        st.on('afterReverseEnd', afterReverseEnd)
-        st.play()
+        sharedTransition.on('beforePlayStart', beforePlayStart)
+        sharedTransition.play()
     }
 
     // 영화 인기 순위 API

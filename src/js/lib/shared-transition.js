@@ -9,57 +9,30 @@ class SharedTransition extends EventEmitter{
             to: config.to
         }
 
-        this._isAnimating = false
+        // transition 도중에 큰 작업이 일어나지 않도록 하기 위한 방지
+        this.isAnimating = false
+        // 완전히 열려있는지 확인
+        this.isExpanded = false
+
+        this.init()
+    }
+
+    init() {
+        console.log('init class SharedTransition')
     }
 
     play() {
-        if (this._isAnimating) return
-
-        this._isAnimating = true
+        if (this.isAnimating) return
+        this.isAnimating = true
 
         this.emit('beforePlayStart')
 
         this._setup()
 
-        const fromPos = this._pos.from
-        const toPos = this._pos.to
+        const fromPoint = this._position.from
+        const toPoint = this._position.to
 
-        this.DOM.to.style.position = 'absolute'
-        this.DOM.to.style.left = 0
-        this.DOM.to.style.top = 0
-        this.DOM.to.transition = 'none'
-        this.DOM.to.opacity = 1
-        this.DOM.to.style.transform = `translate(${fromPos.x}px, ${fromPos.y}px) scale(${fromPos.scale})`
-
-        this._animate()
-        .then(() => {
-            this._isAnimating = false
-
-            this.emit('afterPlayEnd')
-        })
-    }
-
-    // mouseleave할 때 실행되는 함수
-    reverse() {
-        this.emit('beforeReverseStart')
-        console.log('reverse')
-    
-        if (!this._isAnimating) this._setup()
-
-        const fromPos = this._position.from
-        const toPos = this._position.to
-
-        this.DOM.to.style.position = 'absolute'
-        this.DOM.to.style.left = 0
-        this.DOM.to.style.top = 0
-        this.DOM.to.style.transform = `translate(${toPos.x}px, ${toPos.y}px) scale(${toPos.scale})`
-
-        this._animate()
-        .then(() => {
-            this._isAnimating = false
-
-            this.emit('afterReverseEnd')
-        })
+        console.log(fromPoint, toPoint)
     }
 
     _animate() {
@@ -73,27 +46,24 @@ class SharedTransition extends EventEmitter{
     }    
 
     _setup() {
-        // 문서의 루트 요소를 나타내는 Element를 반환
-        const root = document.documentElement
-
-        this._points = {
+        this._rect = {
             from: this._getRect(this.DOM.from),
             to: this._getRect(this.DOM.to)
         }
 
-        const fromPoint = this._points.from
-        const toPoint = this._points.to
+        const fromRect = this._rect.from
+        const toRect = this._rect.to
 
-        this._pos = {
+        this._position = {
             from: {
-                scale: fromPoint.width / toPoint.width,
-                x: (fromPoint.width / 2) - (toPoint.width / 2) + fromPoint.left,
-                y: fromPoint.top + root.scrollTop
+                scale: fromRect.width / toRect.width,
+                x: (fromRect.width / 2) - (toRect.width / 2) + fromRect.left,
+                y: fromRect.top
             },
             to: {
                 scale: 1,
-                x: toPoint.left,
-                y: toPoint.top + root.scrollTop 
+                x: toRect.left,
+                y: toRect.top 
             }
         }
     }
