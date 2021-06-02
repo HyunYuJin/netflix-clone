@@ -1,4 +1,4 @@
-<div class="mainBanner">
+<div class="slides" ref="slides">
     <div class="slide">
         <h2 class="slide-title">지금 뜨는 콘텐츠</h2>
         <div class="slide-inner">
@@ -11,7 +11,7 @@
     </div>
     
     <div class="slide">
-        <h2>키즈</h2>
+        <h2 class="slide-title">키즈</h2>
         <div class="slide-inner">
             <div class="slide-container">
                 <button class="prevBtn"><svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Chevron Back</title><path fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M328 112L184 256l144 144'/></svg></button>
@@ -23,14 +23,16 @@
 
     <div class="preview">
         <div class="preview-inner" ref="preview">
-            <div class="preview-thumnail">
-                <img src="" alt="" ref="smallImage">
-                <img src="" alt="" ref="largeImage">
+            <div class="preview-thumbnail">
+                <img src="" alt ref="smallImage">
+                <img src="" alt ref="largeImage">
             </div>
-            <div class="preview-action"></div>
+            <div class="preview-meta"></div>
+            <div class="preview-close">
+                <button type="button" ref="previewClose"><svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Close</title><path fill='#FFF' stroke='#FFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='32' d='M368 368L144 144M368 144L144 368'/></svg></button>
+            </div>
         </div>
     </div>
-
 </div>
     
 <a href="/tv">TV로 이동</a>

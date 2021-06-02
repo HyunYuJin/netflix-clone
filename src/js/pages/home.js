@@ -50,7 +50,9 @@ class Home extends View {
                 element.insertAdjacentHTML('beforeend', `
                     <div class="slide-content" data-id="${movie.id}">
                         <a href="/">
-                            <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.backdrop_path} />
+                            <div class="slide-thumbnail">
+                                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.backdrop_path} />
+                            </div>
                         </a>
                     </div>
                 `)
@@ -123,16 +125,20 @@ class Home extends View {
         // preview의 위치와 움직일 preview-inner를 저장해주어야하기 때문에 값을 넘겨주어야 한다.
         const sharedTransition = new SharedTransition({
             from: fromEl,
-            to: toEl,
-            duration: '0.24s'
+            to: toEl
         })
 
         // click한 이미지의 src 넘겨주기
         const beforePlayStart = () => {
             this.$refs.smallImage.src = fromEl.src
         }
+        
+        const afterPlayEnd = () => {
+            this.$refs.largeImage.src = fromEl.src.replace('w500', 'original')
+        }
 
         sharedTransition.on('beforePlayStart', beforePlayStart)
+        sharedTransition.on('afterPlayEnd', afterPlayEnd)
         sharedTransition.play()
     }
 

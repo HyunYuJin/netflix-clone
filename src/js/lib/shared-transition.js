@@ -21,38 +21,15 @@ class SharedTransition extends EventEmitter{
         console.log('init class SharedTransition')
     }
 
+    // animation을 시작하는 것 자체
     play() {
         if (this.isAnimating) return
         this.isAnimating = true
 
         this.emit('beforePlayStart')
 
-        this._setup()
-
-        const fromPoint = this._position.from
-        const toPoint = this._position.to
-
-        console.log(fromPoint, toPoint)
-    }
-
-    _animate() {
-        return new Promise((resolve, reject) => {
-          const toEl = this.DOM.to
-          console.log('_animate')
-    
-          // transition이 완료된 이후에 발생하는 이벤트, transition 완료를 감지
-          toEl.addEventListener('transitionend', resolve, { once: true })
-        })
-    }    
-
-    _setup() {
-        this._rect = {
-            from: this._getRect(this.DOM.from),
-            to: this._getRect(this.DOM.to)
-        }
-
-        const fromRect = this._rect.from
-        const toRect = this._rect.to
+        const fromRect = this.DOM.from.getBoundingClientRect()
+        const toRect = this.DOM.to.getBoundingClientRect()
 
         this._position = {
             from: {
@@ -66,15 +43,43 @@ class SharedTransition extends EventEmitter{
                 y: toRect.top 
             }
         }
+
+        const fromPoint = this._position.from
+        const toPoint = this._position.to
+
+        // 시작지점 style 지정
+        this.DOM.to.style.cssText = `
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 1;
+            transition: none;
+            transform: translate(${fromPoint.x}px, ${fromPoint.y}px) scale(${fromPoint.scale});
+        `
+
+        this.DOM.to.offsetHeight
+
+        this._animate(toPoint)
+        .then(() => {
+            this.isAnimating = false
+            this.isExpanded = true // preview가 열림
+
+            this.emit('afterPlayEnd')
+        })
     }
 
-    _getRect(element) {
-        // getBoundingClientRect: 요소의 위치 값 알아내기
-        // 출력 결과: top, bottom, left, right, width, height, x, y
-        const { width, height, left, top } = element.getBoundingClientRect()
+    // preview expand 될 때의 animate
+    _animate({ x, y, scale }) {
+        return new Promise((resolve, reject) => {
+          const toEl = this.DOM.to
+          toEl.style.transition = '.24s';
+          toEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
+    
+          // transition이 완료된 이후에 발생하는 이벤트, transition 완료를 감지
+          toEl.addEventListener('transitionend', resolve, { once: true })
+        })
+    }    
 
-        return { width, height, left, top }
-    }
 }
 
 export default SharedTransition

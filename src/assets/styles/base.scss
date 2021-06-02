@@ -4,6 +4,7 @@ html {
 
 body {
     min-width: 280px;
+    font-size: 14px;
     background-color: #141414;
 }
 
@@ -13,10 +14,22 @@ img {
     object-fit: cover;
 }
 
+button {
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    outline: none;
+    padding: 0;
+}
+
 a {
     text-decoration: none;
 }
 
 ul li {
     list-style: none;
+}
+
+svg {
+    outline: none;
 }
