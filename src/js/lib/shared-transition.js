@@ -27,11 +27,65 @@ class SharedTransition extends EventEmitter{
         this.isAnimating = true
 
         this.emit('beforePlayStart')
+        this._setup()
 
+        const fromPos = this._points.from
+        const toPos = this._points.to
+
+        // 시작지점 style 지정
+        this.DOM.to.style.cssText = `
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 1;
+            transition: none;
+            transform: translate(${fromPos.x}px, ${fromPos.y}px) scale(${fromPos.scale});
+        `
+
+        this.DOM.to.offsetHeight
+
+        this._animate(toPos)
+        .then(() => {
+            this.isAnimating = false
+            this.isExpanded = true // preview가 열림
+
+            this.emit('afterPlayEnd')
+        })
+    }
+
+    // preview-inner가 원래 자리로 돌아가도록
+    reverse() {
+        this.emit('beforeReverseStart')
+
+        // 애니메이션이 실행되고 있지 않을 때만 계산한다.
+        if (!this.isAnimating) this._setup()
+
+        const fromPos = this._points.from
+        const toPos = this._points.to
+
+        this.DOM.to.style.cssText = `
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform: translate(${toPos.x}px, ${toPos.y}px) scale(${toPos.scale});
+        `
+
+        this._animate(fromPos)
+        .then(() => {
+            this.isAnimating = false
+            this.isExpanded = false // preview가 닫힘
+
+            this.DOM.to.style = ''
+
+            this.emit('afterReverseEnd')
+        })
+    }
+
+    _setup() {
         const fromRect = this.DOM.from.getBoundingClientRect()
         const toRect = this.DOM.to.getBoundingClientRect()
 
-        this._position = {
+        this._points = {
             from: {
                 scale: fromRect.width / toRect.width,
                 x: (fromRect.width / 2) - (toRect.width / 2) + fromRect.left,
@@ -43,29 +97,6 @@ class SharedTransition extends EventEmitter{
                 y: toRect.top 
             }
         }
-
-        const fromPoint = this._position.from
-        const toPoint = this._position.to
-
-        // 시작지점 style 지정
-        this.DOM.to.style.cssText = `
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 1;
-            transition: none;
-            transform: translate(${fromPoint.x}px, ${fromPoint.y}px) scale(${fromPoint.scale});
-        `
-
-        this.DOM.to.offsetHeight
-
-        this._animate(toPoint)
-        .then(() => {
-            this.isAnimating = false
-            this.isExpanded = true // preview가 열림
-
-            this.emit('afterPlayEnd')
-        })
     }
 
     // preview expand 될 때의 animate

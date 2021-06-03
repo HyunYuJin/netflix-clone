@@ -79,22 +79,22 @@ class Home extends View {
                 }
             })
 
-            const mouseenterFn = (evnet) => {
-                this._showSmallPreview(event)
+            let enterPreview = 0
+
+            const mouseenterFn = (event) => {
+                enterPreview = setTimeout(() => {
+                    this._showSmallPreview(event)
+                }, 400)
             }
 
             const mouseleaveFn = (event) => {
-
+                if (enterPreview) clearTimeout(enterPreview)
             }
 
-            const clickFn = (event) => {
-                this._showPreview(event)
-            }
-
+            // 모든 이미지에 mouseenter, mouseleave 이벤트 걸어주기
             images.forEach(item => {
-                // item.addEventListener('mouseenter', mouseenterFn)
-                // item.addEventListener('mouseleave', mouseleaveFn)
-                item.addEventListener('click', clickFn)
+                item.addEventListener('mouseenter', mouseenterFn)
+                item.addEventListener('mouseleave', mouseleaveFn)
             })
 
             swiper.on('started', () => {
@@ -111,16 +111,67 @@ class Home extends View {
 
     async _showSmallPreview(event) {
         const fromEl = event.target
-        const bounds = fromEl.getBoundingClientRect()
-        console.log(bounds)
+        const toEl = this.$refs.preview
+        const smallImageSrc = fromEl.getAttribute('src') // mouseenter한 img의 src 가져오기
+        const largeImageSrc = smallImageSrc.replace('w500', 'original') // 고화질 img로 변경
+        // const bounds = fromEl.getBoundingClientRect()
+
+        const id = fromEl.closest('[data-id]').dataset.id
+        const detailData = await tmdb.getMovieDetails(id)
+
+        // metadata 정보 설정해주기
+        this._setSmallPreviewMetadata(detailData)
+
+        const sharedTransition = new SharedTransition({
+            from: fromEl,
+            to: toEl
+        })
+
+        // 원래 위치로 이동시켜주기
+        const reverse = () => {
+            sharedTransition.reverse()
+        }
+
+        const showPreview = () => {
+            this._showPreview(toEl)
+            // 1. 왜 여기서 해제해주고
+            toEl.removeEventListener('mouseleave', reverse)
+        }
+
+        const beforePlayStart = () => {
+            // 저화질 이미지 로드
+            this.$refs.smallImage.src = smallImageSrc
+
+            toEl.parentNode.classList.add('small-expanded')
+            // 2. 여기서 다시 걸어주지?
+            toEl.addEventListener('mouseleave', reverse, { once: true })
+        }
+        
+        const afterPlayEnd = () => {
+            // 고화질 이미지 로드
+            this.$refs.largeImage.src = largeImageSrc
+            this.$refs.details.addEventListener('click', showPreview, { once: true })
+        }
+
+        const beforeReverseStart = () => {
+            toEl.parentNode.classList.remove('small-expanded')
+        }
+
+        const afterReverseEnd = () => {
+            this.$refs.smallImage.src = ''
+            this.$refs.largeImage.src = ''
+        }
+
+        sharedTransition.on('beforePlayStart', beforePlayStart)
+        sharedTransition.on('afterPlayEnd', afterPlayEnd)
+        sharedTransition.on('beforeReverseStart', beforeReverseStart)
+        sharedTransition.on('afterReverseEnd', afterReverseEnd)
+        sharedTransition.play()
     }
     
     async _showPreview(event) {
         const fromEl = event.target
         const toEl = this.$refs.preview
-
-        // const id = fromEl.closest('[data-id]').dataset.id
-        // const result = await tmdb.getMovieDetails(id)
 
         // preview의 위치와 움직일 preview-inner를 저장해주어야하기 때문에 값을 넘겨주어야 한다.
         const sharedTransition = new SharedTransition({
@@ -135,6 +186,7 @@ class Home extends View {
         
         const afterPlayEnd = () => {
             this.$refs.largeImage.src = fromEl.src.replace('w500', 'original')
+            // this.$refs.previewClose.addEventListener('click', reverse, { once: true })
         }
 
         sharedTransition.on('beforePlayStart', beforePlayStart)
@@ -163,6 +215,18 @@ class Home extends View {
             const kids = this.$refs.kids
             this._render(kids, movieList)
         })
+    }
+
+    _setSmallPreviewMetadata(data) {
+        const average = data.vote_average * 10
+        const runtime = data.runtime
+        const releaseDate = data.release_date
+        const genres = data.genres
+        
+        this.$refs.average.insertAdjacentHTML('beforeend', `${average}% 일치`)
+        this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
+        this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
+        this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join())
     }
 
     // Youtube에서 제공하는 영화 예고편 요청
