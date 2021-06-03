@@ -12,7 +12,7 @@ class Home extends View {
         })
 
         this.DOM = {
-            mainBanner: this.$element.querySelector('.mainBanner'),
+            slides: this.$element.querySelector('.slides'),
             slide: this.$element.querySelectorAll('.slide'),
             slideInner: this.$element.querySelector('.slide-inner'),
             slideContainer: this.$element.querySelectorAll('.slide-wrapper'),
@@ -109,23 +109,60 @@ class Home extends View {
         })
     }
 
-    async _showSmallPreview(event) {
+    _setSmallPreviewPos(event) {
+        const root = document.documentElement
         const fromEl = event.target
         const toEl = this.$refs.preview
-        const smallImageSrc = fromEl.getAttribute('src') // mouseenter한 img의 src 가져오기
-        const largeImageSrc = smallImageSrc.replace('w500', 'original') // 고화질 img로 변경
-        // const bounds = fromEl.getBoundingClientRect()
+        const metaEl = this.$refs.metadata
+        const bounds = fromEl.getBoundingClientRect()
 
+        const winW = window.innerWidth  // 브라우저 창의 틀은 빼고 스크롤 크기를 포함한 크기
+        const width = bounds.width * 1.5 // width를 1.5만큼 scale
+        let height = bounds.height * 1.5 // height를 1.5만큼 scale
+        height = height + metaEl.clientHeight
+
+        let top = bounds.top - (height - bounds.height) / 2
+        top = top + root.scrollTop
+
+        let left = bounds.left - (width - bounds.width) / 2
+        if (left <= 0) {
+            left = bounds.left
+        } else if ((left + width) >= winW) {
+            left = bounds.right - width
+        }
+
+        toEl.style.cssText = `
+            position: 'absolute';
+            left: 0;
+            top: 0;
+            width: ${Math.ceil(width)}px;
+            height: ${Math.ceil(height)}px;
+            transform: translate(${Math.ceil(left)}px, ${Math.ceil(top)}px);
+        `
+    }
+
+    async _showSmallPreview(event) {
+        const root = document.documentElement
+        const fromEl = event.target
+        const toEl = this.$refs.preview
         const id = fromEl.closest('[data-id]').dataset.id
         const detailData = await tmdb.getMovieDetails(id)
-
+        
         // metadata 정보 설정해주기
         this._setSmallPreviewMetadata(detailData)
+        // preview 위치 설정
+        this._setSmallPreviewPos(event)
 
         const sharedTransition = new SharedTransition({
             from: fromEl,
-            to: toEl
+            to: toEl,
+            points: {
+                from: fromEl.getBoundingClientRect()
+            }
         })
+        
+        const smallImageSrc = fromEl.getAttribute('src') // mouseenter한 img의 src 가져오기
+        const largeImageSrc = smallImageSrc.replace('w500', 'original') // 고화질 img로 변경
 
         // 원래 위치로 이동시켜주기
         const reverse = () => {
@@ -155,11 +192,19 @@ class Home extends View {
 
         const beforeReverseStart = () => {
             toEl.parentNode.classList.remove('small-expanded')
+            toEl.parentNode.classList.remove('expanded')
         }
 
         const afterReverseEnd = () => {
             this.$refs.smallImage.src = ''
             this.$refs.largeImage.src = ''
+
+            if (this.DOM.slides.style.position === 'fixed') {
+                this.DOM.slides.style = ''
+            }
+
+            this.$refs.details.removeEventListener('click', showPreview)
+            this._smallSharedTransition = null
         }
 
         sharedTransition.on('beforePlayStart', beforePlayStart)
@@ -167,11 +212,16 @@ class Home extends View {
         sharedTransition.on('beforeReverseStart', beforeReverseStart)
         sharedTransition.on('afterReverseEnd', afterReverseEnd)
         sharedTransition.play()
+
+        this._smallSharedTransition = sharedTransition
     }
     
-    async _showPreview(event) {
-        const fromEl = event.target
-        const toEl = this.$refs.preview
+    // Full preview
+    async _showPreview(element) {
+        const root = document.documentElement
+        const fromEl = element
+        const toEl = element
+        const close = this.$refs.previewClose
 
         // preview의 위치와 움직일 preview-inner를 저장해주어야하기 때문에 값을 넘겨주어야 한다.
         const sharedTransition = new SharedTransition({
@@ -179,14 +229,26 @@ class Home extends View {
             to: toEl
         })
 
+        const reverse = () => {
+            this._smallSharedTransition.reverse()
+        }
+
         // click한 이미지의 src 넘겨주기
         const beforePlayStart = () => {
-            this.$refs.smallImage.src = fromEl.src
+            toEl.parentNode.classList.remove('small-expanded')
+            toEl.parentNode.classList.add('expanded')
+            toEl.style = ''
+
+            this.DOM.slides.style.cssText = `
+                position: fixed;
+                top: 10px;
+                padding-top: 68px;
+            `
         }
         
         const afterPlayEnd = () => {
-            this.$refs.largeImage.src = fromEl.src.replace('w500', 'original')
-            // this.$refs.previewClose.addEventListener('click', reverse, { once: true })
+            this.DOM.slides.style = ''
+            close.addEventListener('click', reverse, { once: true })
         }
 
         sharedTransition.on('beforePlayStart', beforePlayStart)
@@ -236,9 +298,9 @@ class Home extends View {
         .then(data => {
             if (data.results.length > 0) {
                 const youtubeId = data.results[0].key
-                this.DOM.mainBanner.innerHTML += `<iframe width="100%" height="100%" src="${VIDEO_URL + youtubeId}?autoplay=1"></iframe>` 
+                this.DOM.slides.innerHTML += `<iframe width="100%" height="100%" src="${VIDEO_URL + youtubeId}?autoplay=1"></iframe>` 
             } else {
-                this.DOM.mainBanner.innerHTML += `<div>재생할 예고편이 없습니다.</div>`
+                this.DOM.slides.innerHTML += `<div>재생할 예고편이 없습니다.</div>`
             }
         })
         .catch(error => {

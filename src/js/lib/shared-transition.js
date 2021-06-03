@@ -9,6 +9,8 @@ class SharedTransition extends EventEmitter{
             to: config.to
         }
 
+        this._points = config.points
+
         // transition 도중에 큰 작업이 일어나지 않도록 하기 위한 방지
         this.isAnimating = false
         // 완전히 열려있는지 확인
@@ -23,10 +25,14 @@ class SharedTransition extends EventEmitter{
 
     // animation을 시작하는 것 자체
     play() {
-        if (this.isAnimating) return
+        if (this.isAnimating) {
+            return
+        }
+
         this.isAnimating = true
 
         this.emit('beforePlayStart')
+
         this._setup()
 
         const fromPos = this._points.from
@@ -81,10 +87,22 @@ class SharedTransition extends EventEmitter{
         })
     }
 
+    // preview expand 될 때의 animate
+    _animate({ x, y, scale }) {
+        return new Promise((resolve, reject) => {
+          const toEl = this.DOM.to
+          toEl.style.transition = '.24s';
+          toEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
+    
+          // transition이 완료된 이후에 발생하는 이벤트, transition 완료를 감지
+          toEl.addEventListener('transitionend', resolve, { once: true })
+        })
+    }
+
     _setup() {
         const fromRect = this.DOM.from.getBoundingClientRect()
         const toRect = this.DOM.to.getBoundingClientRect()
-
+        
         this._points = {
             from: {
                 scale: fromRect.width / toRect.width,
@@ -98,19 +116,6 @@ class SharedTransition extends EventEmitter{
             }
         }
     }
-
-    // preview expand 될 때의 animate
-    _animate({ x, y, scale }) {
-        return new Promise((resolve, reject) => {
-          const toEl = this.DOM.to
-          toEl.style.transition = '.24s';
-          toEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
-    
-          // transition이 완료된 이후에 발생하는 이벤트, transition 완료를 감지
-          toEl.addEventListener('transitionend', resolve, { once: true })
-        })
-    }    
-
 }
 
 export default SharedTransition

@@ -2,7 +2,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 99;
+    z-index: 10;
     pointer-events: none; // preview가 뜨기전에는 클릭되면 안된다.
 
     display: flex;
@@ -10,6 +10,27 @@
     width: 100%;
     height: 100%;
     padding: 56px 0;
+
+    &.expanded {
+        pointer-events: auto;
+
+        .preview-inner {
+            opacity: 1;
+        }
+
+        .preview-metadata {
+            opacity: 1;
+        }
+
+        .preview-metadata {
+            opacity: 1;
+            padding: 32px;
+        }
+
+        .preview-close {
+            display: block;
+        }
+    }
     
     &.small-expanded {
         pointer-events: auto;
@@ -17,16 +38,25 @@
         .preview-inner {
             opacity: 1;
         }
+
+        .preview-metadata {
+            opacity: 1;
+        }
+
+        .preview-close {
+            display: none;
+        }
     }
 }
-
 
 .preview-inner {
     width: 90%;
     max-width: 1024px;
+    border-radius: 5px;
     transform-origin: center top;
     box-shadow: rgb(0 0 0 / 75%) 0px 3px 10px;
     opacity: 0;
+    overflow: hidden;
 }
 
 .preview-thumbnail {
@@ -55,6 +85,8 @@
 }
 
 .preview-metadata {
+    opacity: 0;
+    transition: 0.24s;
     padding: 24px 16px 16px;
     background-color: #181818;
 }
@@ -92,8 +124,6 @@
 }
 
 .preview-close {
-    // display: none;
-    display: block;
     position: absolute;
     top: 0;
     right: 0;
