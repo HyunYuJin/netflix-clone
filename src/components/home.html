@@ -26,6 +26,9 @@
             <div class="preview-thumbnail">
                 <img src="" alt ref="smallImage">
                 <img src="" alt ref="largeImage">
+                <div class="preview-video" ref="youtubeVideo">
+                    <div id="player"></div>
+                </div>
             </div>
 
             <div class="preview-metadata" ref="metadata">
@@ -38,7 +41,8 @@
                     </div>
                     <div class="right">
                         <button type="button" class="details" ref="details">
-                            <svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Chevron Down</title><path fill='none' stroke='#FFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M112 184l144 144 144-144'/></svg></button>
+                            <svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Chevron Down</title><path fill='none' stroke='#FFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M112 184l144 144 144-144'/></svg>
+                        </button>
                     </div>
                 </div>
 
@@ -46,7 +50,7 @@
                     <span class="average" ref="average"></span>
                     <span class="runtime" ref="runtime"></span>
                     <span class="date" ref="releaseDate"></span>
-                    <span class="genres" ref="genres"></span>
+                    <div class="genres" ref="genres"></div>
                 </div>
             </div>
             
@@ -55,6 +59,7 @@
             </div>
         </div>
     </div>
+    <div class="overlay" ref="overlay"></div>
 </div>
     
 <a href="/tv">TV로 이동</a>

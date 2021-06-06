@@ -12,6 +12,11 @@ export const tmdb = {
     API_KEY,
     BASE_IMAGE_URL,
 
+    // https://developers.themoviedb.org/3/trending/get-trending
+    getTrending ({ media_type = 'movie', time_window = 'week' } = {}) {
+        return _fetch(`/trending/${media_type}/${time_window}`)
+    },
+
     // https://api.themoviedb.org/3/movie/popular
     getPopularMovie() {
         return _fetch(`/movie/popular`)
@@ -19,7 +24,7 @@ export const tmdb = {
 
     // https://developers.themoviedb.org/3/movies/get-movie-details
     getMovieDetails(id) {
-        return _fetch(`/movie/${id}`, 'append_to_response=similar')
+        return _fetch(`/movie/${id}`, 'append_to_response=similar,videos')
     },
 
     // https://api.themoviedb.org/3/movie/{id}

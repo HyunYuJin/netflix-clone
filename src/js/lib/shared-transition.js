@@ -1,4 +1,5 @@
 import EventEmitter from 'events'
+import { addStyle, emptyStyle } from '../helper/utils'
 
 class SharedTransition extends EventEmitter{
     constructor(config) {
@@ -8,8 +9,6 @@ class SharedTransition extends EventEmitter{
             from: config.from,
             to: config.to
         }
-
-        this._points = config.points
 
         // transition 도중에 큰 작업이 일어나지 않도록 하기 위한 방지
         this.isAnimating = false
@@ -25,9 +24,7 @@ class SharedTransition extends EventEmitter{
 
     // animation을 시작하는 것 자체
     play() {
-        if (this.isAnimating) {
-            return
-        }
+        if (this.isAnimating) return
 
         this.isAnimating = true
 
@@ -39,14 +36,14 @@ class SharedTransition extends EventEmitter{
         const toPos = this._points.to
 
         // 시작지점 style 지정
-        this.DOM.to.style.cssText = `
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 1;
-            transition: none;
-            transform: translate(${fromPos.x}px, ${fromPos.y}px) scale(${fromPos.scale});
-        `
+        addStyle(this.DOM.to, {
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            opacity: 1,
+            transition: 'none',
+            transform: `translate(${fromPos.x}px, ${fromPos.y}px) scale(${fromPos.scale})`      
+        })
 
         this.DOM.to.offsetHeight
 
@@ -69,19 +66,19 @@ class SharedTransition extends EventEmitter{
         const fromPos = this._points.from
         const toPos = this._points.to
 
-        this.DOM.to.style.cssText = `
-            position: absolute;
-            left: 0;
-            top: 0;
-            transform: translate(${toPos.x}px, ${toPos.y}px) scale(${toPos.scale});
-        `
+        addStyle(this.DOM.to, {
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            transform: `translate(${toPos.x}px, ${toPos.y}px) scale(${toPos.scale})`
+        })
 
         this._animate(fromPos)
         .then(() => {
             this.isAnimating = false
             this.isExpanded = false // preview가 닫힘
 
-            this.DOM.to.style = ''
+            emptyStyle(this.DOM.to)
 
             this.emit('afterReverseEnd')
         })

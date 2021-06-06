@@ -3,6 +3,7 @@ import template from '../../components/home.html'
 import { tmdb } from '../api/index'
 import Swiper from '../lib/swiper'
 import SharedTransition from '../lib/shared-transition'
+import { addStyle, emptyStyle, emptyChild, addClass, removeClass } from '../helper/utils'
 
 class Home extends View {
     constructor() {
@@ -109,6 +110,7 @@ class Home extends View {
         })
     }
 
+    // small preview의 위치
     _setSmallPreviewPos(event) {
         const root = document.documentElement
         const fromEl = event.target
@@ -117,9 +119,10 @@ class Home extends View {
         const bounds = fromEl.getBoundingClientRect()
 
         const winW = window.innerWidth  // 브라우저 창의 틀은 빼고 스크롤 크기를 포함한 크기
-        const width = bounds.width * 1.5 // width를 1.5만큼 scale
-        let height = bounds.height * 1.5 // height를 1.5만큼 scale
-        height = height + metaEl.clientHeight
+        const width = bounds.width * 1.5 // width를 1.5만큼 늘리기
+        let height = bounds.height * 1.5 // height를 1.5만큼 늘리기
+        
+        height = height + metaEl.clientHeight // metaEl의 내부 높이를 픽셀로 반환
 
         let top = bounds.top - (height - bounds.height) / 2
         top = top + root.scrollTop
@@ -131,14 +134,14 @@ class Home extends View {
             left = bounds.right - width
         }
 
-        toEl.style.cssText = `
-            position: 'absolute';
-            left: 0;
-            top: 0;
-            width: ${Math.ceil(width)}px;
-            height: ${Math.ceil(height)}px;
-            transform: translate(${Math.ceil(left)}px, ${Math.ceil(top)}px);
-        `
+        addStyle(toEl, {
+            position: 'absolute',
+            left: 0,
+            top: 0,
+            transform: `translate(${Math.ceil(left)}px, ${Math.ceil(top)}px)`,
+            width: `${Math.ceil(width)}px`,
+            height: `${Math.ceil(height)}px`
+        })
     }
 
     async _showSmallPreview(event) {
@@ -155,10 +158,7 @@ class Home extends View {
 
         const sharedTransition = new SharedTransition({
             from: fromEl,
-            to: toEl,
-            points: {
-                from: fromEl.getBoundingClientRect()
-            }
+            to: toEl
         })
         
         const smallImageSrc = fromEl.getAttribute('src') // mouseenter한 img의 src 가져오기
@@ -171,7 +171,6 @@ class Home extends View {
 
         const showPreview = () => {
             this._showPreview(toEl)
-            // 1. 왜 여기서 해제해주고
             toEl.removeEventListener('mouseleave', reverse)
         }
 
@@ -179,15 +178,20 @@ class Home extends View {
             // 저화질 이미지 로드
             this.$refs.smallImage.src = smallImageSrc
 
+            
             toEl.parentNode.classList.add('small-expanded')
-            // 2. 여기서 다시 걸어주지?
             toEl.addEventListener('mouseleave', reverse, { once: true })
         }
         
         const afterPlayEnd = () => {
             // 고화질 이미지 로드
             this.$refs.largeImage.src = largeImageSrc
+
+            // Full preview 띄워주기
             this.$refs.details.addEventListener('click', showPreview, { once: true })
+
+            // 동영상 로드
+            this._loadYouTubeVideo(detailData.videos)
         }
 
         const beforeReverseStart = () => {
@@ -200,9 +204,17 @@ class Home extends View {
             this.$refs.largeImage.src = ''
 
             if (this.DOM.slides.style.position === 'fixed') {
-                this.DOM.slides.style = ''
+                emptyStyle(this.DOM.slides)
+                root.scrollTop = this._beforeScrollTop
             }
 
+            emptyChild(this.$refs.average)
+            emptyChild(this.$refs.runtime)
+            emptyChild(this.$refs.releaseDate)
+            emptyChild(this.$refs.genres)
+            emptyChild(this.$refs.youtubeVideo)
+
+            this.$refs.youtubeVideo.insertAdjacentHTML('beforeend', '<div id="player"></div>')
             this.$refs.details.removeEventListener('click', showPreview)
             this._smallSharedTransition = null
         }
@@ -229,6 +241,8 @@ class Home extends View {
             to: toEl
         })
 
+        this._beforeScrollTop = root.scrollTop
+
         const reverse = () => {
             this._smallSharedTransition.reverse()
         }
@@ -237,17 +251,21 @@ class Home extends View {
         const beforePlayStart = () => {
             toEl.parentNode.classList.remove('small-expanded')
             toEl.parentNode.classList.add('expanded')
-            toEl.style = ''
+            emptyStyle(toEl)
 
-            this.DOM.slides.style.cssText = `
-                position: fixed;
-                top: 10px;
-                padding-top: 68px;
-            `
+            addStyle(this.DOM.slides, {
+                position: 'fixed',
+                top: `${-this._beforeScrollTop}px`,
+                paddingTop: '68px' 
+            })
+
+            console.log(this.$refs.overlay)
+            addClass(this.$refs.overlay, 'show-video')
         }
         
         const afterPlayEnd = () => {
-            this.DOM.slides.style = ''
+            emptyStyle(this.DOM.slides)
+
             close.addEventListener('click', reverse, { once: true })
         }
 
@@ -255,6 +273,68 @@ class Home extends View {
         sharedTransition.on('afterPlayEnd', afterPlayEnd)
         sharedTransition.play()
     }
+
+    // https://developers.google.com/youtube/iframe_api_reference?hl=ko
+    _loadYouTubeScript () {
+        return new Promise((resolve, reject) => {
+            // Load the IFrame Player API code asynchronously.
+            const firstScriptTag = document.getElementsByTagName('script')[0]
+            const tag = document.createElement('script')
+            tag.onload = () => window.YT.ready(resolve)
+            tag.onerror = reject
+            tag.src = 'https://www.youtube.com/player_api'
+
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
+        })
+    }
+
+    // youtube 동영상 로드하기
+    async _loadYouTubeVideo(videos) {
+        const { results } = videos
+        const youtubeVideo = this.$refs.youtubeVideo
+        
+        if (!results.length) return
+        
+        if (!window.YT) {
+            await this._loadYouTubeScript()
+        }
+
+        const video = results.find(v => v.type === 'Teaser' || v.type === 'Trailer')
+        if (!video) return
+
+        const player = new window.YT.Player('player', {
+            width: '100%',
+            height: '100%',
+            videoId: video.key,
+            playerVars: {
+                autoplay: 1,
+                mute: 1,
+                autohide: 1,
+                modestbranding: 1,
+                rel: 0,
+                showinfo: 0,
+                controls: 0,
+                disablekb: 1,
+                enablejsapi: 1,
+                iv_load_policy: 3
+            },
+            events: {
+                onReady: (event) => {
+                    event.target.playVideo()
+                },
+
+                onStateChange: (event) => {
+                    if (event.data === YT.PlayerState.PLAYING) {
+                        addClass(youtubeVideo, 'show-video')
+                    }
+        
+                    if (event.data === YT.PlayerState.UNSTARTED) {
+                        removeClass(youtubeVideo, 'show-video')
+                    }
+                }
+            }
+        })
+    }   
 
     // 영화 인기 순위 API
     async _requestPopular() {
@@ -289,6 +369,18 @@ class Home extends View {
         this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
         this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
         this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join())
+    }
+
+    _setSmallPreviewMetadata(data) {
+        const average = data.vote_average * 10
+        const runtime = data.runtime
+        const releaseDate = data.release_date
+        const genres = data.genres
+        
+        this.$refs.average.insertAdjacentHTML('beforeend', `${average}% 일치`) // 이거 왜 여러개?
+        this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
+        this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
+        this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join('')) // join('')을 사용해서 콤마 지우기
     }
 
     // Youtube에서 제공하는 영화 예고편 요청
