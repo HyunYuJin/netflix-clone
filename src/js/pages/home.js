@@ -13,6 +13,7 @@ class Home extends View {
         })
 
         this.DOM = {
+            playerContainer: this.$element.querySelector('.motion-player-container'),
             slides: this.$element.querySelector('.slides'),
             slide: this.$element.querySelectorAll('.slide'),
             slideInner: this.$element.querySelector('.slide-inner'),
@@ -24,6 +25,7 @@ class Home extends View {
     }
 
     mounted() {
+        this._requestVideo()
         this._requestPopular()
         this._requestKids()
         this._requestHorror()
@@ -55,6 +57,17 @@ class Home extends View {
     _initEvent() {
         window.addEventListener('scroll', this._onScrollStart)
         window.addEventListener('scroll', this._onScrollEnd)
+    }
+
+    async _requestVideo() {
+        const detailData = await tmdb.getMovieDetails(337404)
+
+        return new Promise((resolve, reject) => {
+            var play = this._loadYouTubeVideo(detailData.videos)
+            this.DOM.playerContainer.insertAdjacentHTML('beforeend', play)
+
+            resolve()
+        })
     }
 
     // GET DATA
