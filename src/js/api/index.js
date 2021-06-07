@@ -22,6 +22,11 @@ export const tmdb = {
         return _fetch(`/movie/popular`)
     },
 
+    // https://developers.themoviedb.org/3/discover/movie-discover  
+    getGenre(id) {
+        return _fetch(`/discover/movie`, `sort_by=popularity.desc&region=KR&with_genres=${id}`)
+    },
+
     // https://developers.themoviedb.org/3/movies/get-movie-details
     getMovieDetails(id) {
         return _fetch(`/movie/${id}`, 'append_to_response=similar,videos')
@@ -30,10 +35,5 @@ export const tmdb = {
     // https://api.themoviedb.org/3/movie/{id}
     getVideo(id) {
         return window.fetch(`${API_URL}/movie/${id}/videos?api_key=${API_KEY}`)
-    },
-
-    // https://developers.themoviedb.org/3/discover/movie-discover  
-    getGenre(id) {
-        return _fetch(`/discover/movie`, `sort_by=popularity.desc&region=KR&with_genres=${id}`)
     }
 }

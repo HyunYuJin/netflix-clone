@@ -22,9 +22,13 @@ class Home extends View {
     }
 
     mounted() {
-        this._initDOM()
         this._requestPopular()
-        this._renderGenre()
+        this._requestKids()
+        this._requestHorror()
+        this._requestHistory()
+        this._requestDocumentary()
+
+        this._initDOM()
     }
 
     _initDOM() {
@@ -37,6 +41,84 @@ class Home extends View {
                 </div>
             `)
         }
+    }
+
+    // GET DATA
+    _requestPopular() { // 영화 인기 순위 API
+        const popular = this.$refs.popular
+
+        this.intersectionObserver(popular, () => { 
+            // 인기가 많은 순서대로 정렬
+            tmdb.getPopularMovie()
+            .then((data) => {
+                const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
+                this._render(popular, movieList)
+            })
+            .catch(err => {
+                console.log('Fetch Error', err);
+            })
+        })
+    }
+
+    _requestKids() {
+        const kids = this.$refs.kids
+
+        this.intersectionObserver(kids, () => {
+            tmdb.getGenre(16)
+            .then(data => {
+                const movieList = data.results
+                this._render(kids, movieList)
+            })
+            .catch(err => {
+                console.log('Fetch Error', err);
+            })
+        })
+    }
+
+    
+    _requestHistory() {
+        const history = this.$refs.history
+        
+        this.intersectionObserver(history, () => {
+            tmdb.getGenre(36)
+            .then(data => {
+                const movieList = data.results
+                this._render(history, movieList)
+            })
+            .catch(err => {
+                console.log('Fetch Error', err);
+            })
+        })
+    }
+    
+    _requestHorror() {
+        const horror = this.$refs.horror
+
+        this.intersectionObserver(horror, () => {
+            tmdb.getGenre(27)
+            .then(data => {
+                const movieList = data.results
+                this._render(horror, movieList)
+            })
+            .catch(err => {
+                console.log('Fetch Error', err);
+            })
+        })
+    }
+    
+    _requestDocumentary() {
+        const documentary = this.$refs.documentary
+
+        this.intersectionObserver(documentary, () => {
+            tmdb.getGenre(99)
+            .then(data => {
+                const movieList = data.results
+                this._render(documentary, movieList)
+            })
+            .catch(err => {
+                console.log('Fetch Error', err);
+            })
+        })
     }
 
     _render (element, movieList) {
@@ -334,29 +416,6 @@ class Home extends View {
                 }
             }
         })
-    }   
-
-    // 영화 인기 순위 API
-    async _requestPopular() {
-        await tmdb.getPopularMovie()
-        .then(data => {
-            // 인기가 많은 순서대로 정렬
-            const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
-            const popular = this.$refs.popular
-            this._render(popular, movieList)
-        })
-        .catch(err => {
-            console.log('Fetch Error', err);
-        })
-    }
-
-    async _renderGenre() {
-        await tmdb.getGenre(16)
-        .then(data => {
-            const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
-            const kids = this.$refs.kids
-            this._render(kids, movieList)
-        })
     }
 
     _setSmallPreviewMetadata(data) {
@@ -381,23 +440,6 @@ class Home extends View {
         this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
         this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
         this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join('')) // join('')을 사용해서 콤마 지우기
-    }
-
-    // Youtube에서 제공하는 영화 예고편 요청
-    _requestVideo(id) {
-        const VIDEO_URL = 'https://www.youtube.com/embed/'
-        tmdb.getVideo(id)
-        .then(data => {
-            if (data.results.length > 0) {
-                const youtubeId = data.results[0].key
-                this.DOM.slides.innerHTML += `<iframe width="100%" height="100%" src="${VIDEO_URL + youtubeId}?autoplay=1"></iframe>` 
-            } else {
-                this.DOM.slides.innerHTML += `<div>재생할 예고편이 없습니다.</div>`
-            }
-        })
-        .catch(error => {
-            console.log(error)
-        })
     }
 }
 

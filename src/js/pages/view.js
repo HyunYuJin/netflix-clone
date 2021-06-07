@@ -1,39 +1,51 @@
+import { isFunction } from '../helper/utils'
+
 // Super(부모) Class
 // 중복을 방지하기 위해 (Global)
-
 class View {
     constructor(attr) {
         this.$refs = {}
         this.$element = this._createElement(attr)
     }
 
-    lazyLoad(image) {
-        const images = Array.from(image)
+    intersectionObserver(elem, callback) {
+        // elem type 확인 -> NodeListaus 배열로 반환
+        elem = elem instanceof NodeList ? Array.from(elem) : elem
 
         // target element가 화면에 나타났는지를 감지
         if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries, observer) => {
-                // 변화가 생기면 관찰자는 callback을 실행한다.
-                entries.forEach((entry, index) => {
+            const io = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        const img = entry.target
-                        img.src = img.dataset.src
+                        // 변화가 생기면 관찰자는 callback을 실행한다.
+                        if (isFunction(callback)) {
+                            callback.call(this, entry.target)
+                        }
 
-                        setTimeout(() => img.classList.add('loaded'), 75 * (index - 1))
                         // 관찰 중지
-                        imageObserver.unobserve(img)
+                        io.unobserve(entry.target)
                     }
                 })
             })
 
-            // 관찰할 대상(요소) 등록
-            images.forEach((img) => imageObserver.observe(img));
-        } else {
-            images.forEach((img) => {
-                img.src = img.dataset.src
-                img.classList.add('loaded')
-            })
+            if (Array.isArray(elem)) {
+                // 관찰할 대상(요소) 등록
+                elem.forEach(target => io.observe(target))
+            } else {
+                io.observe(elem)
+            }
         }
+    }
+
+    lazyLoad(image) {
+        const images = Array.from(image)
+
+        this.intersectionObserver(images, (img) => {
+            img.onload = () => {
+                img.classList.add('loaded')
+            }
+            img.src = img.dataset.src
+        })
     }
 
     // class를 제품이라 생각하면 사용자한테 내보여서는 안되는 것들 (프라이빗한 메소드)
