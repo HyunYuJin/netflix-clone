@@ -19,6 +19,8 @@ class Home extends View {
             slideContainer: this.$element.querySelectorAll('.slide-wrapper'),
             slideContents: null
         }
+
+        this._isScrolling = false
     }
 
     mounted() {
@@ -31,7 +33,14 @@ class Home extends View {
         this._initDOM()
     }
 
+    destroy() {
+        window.removeEventListener('scroll', this._onScrollStart)
+        window.removeEventListener('scroll', this._onScrollEnd)
+    }
+
     _initDOM() {
+        this._initEvent()
+
         for (let i = 0; i < this.DOM.slideContainer.length; i++) {
             this.DOM.slideContainer[i].insertAdjacentHTML('beforeend', `
                 <div class="slide-content">
@@ -41,6 +50,11 @@ class Home extends View {
                 </div>
             `)
         }
+    }
+
+    _initEvent() {
+        window.addEventListener('scroll', this._onScrollStart)
+        window.addEventListener('scroll', this._onScrollEnd)
     }
 
     // GET DATA
@@ -146,7 +160,6 @@ class Home extends View {
                 }
             })
         })
-
     }
 
     _setupSwipe(element) {
@@ -158,7 +171,7 @@ class Home extends View {
             const swiper = new Swiper(element, {
                 navigation: {
                     prevEl: element.parentNode.querySelector('.prevBtn'),
-                    nextEl: element.parentNode.querySelector('.nextBtn'),
+                    nextEl: element.parentNode.querySelector('.nextBtn')
                 }
             })
 
@@ -260,7 +273,6 @@ class Home extends View {
             // 저화질 이미지 로드
             this.$refs.smallImage.src = smallImageSrc
 
-            
             toEl.parentNode.classList.add('small-expanded')
             toEl.addEventListener('mouseleave', reverse, { once: true })
         }
@@ -440,6 +452,29 @@ class Home extends View {
         this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
         this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
         this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join('')) // join('')을 사용해서 콤마 지우기
+    }
+
+    _onScrollStart() {
+        console.log('_onScrollStart')
+        if (this._isScrolling) {
+            return
+        }
+        this._isScrolling = true
+
+        addStyle(document.body, {
+            pointerEvents: 'none'
+        })
+    }
+
+    _onScrollEnd() {
+        if (!this._isScrolling) {
+            console.log('_onScrollEnd')
+            return
+        }
+
+        this._isScrolling = false
+
+        emptyStyle(document.body)
     }
 }
 
