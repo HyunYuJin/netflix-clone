@@ -21,7 +21,6 @@ header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin: 0 1.8rem;
 
         > a {
             display: block;
@@ -45,7 +44,7 @@ header {
         > a {
             display: block;
             color: #e5e5e5;
-            padding-right: 1rem;
+            padding: 1.2rem;
             transition: color .3s;
 
             &:hover {
@@ -58,7 +57,7 @@ header {
         }
 
         > a:first-child { padding-left: 1rem; }
-        > a:last-child { padding: 0; }
+        > a:last-child { padding-right: 0; }
     }
 }
 
