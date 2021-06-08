@@ -37,16 +37,6 @@ export function addClass(element, value) {
     element.classList.add(value)
 }
 
-export function emptyClass(element, value) {
-    if (isNumber(element.length)) {
-        Array.from(element).forEach(elem => addClass(elem, value))
-
-        return
-    }
-
-    element.classList.remove(value)
-}
-
 export function removeClass(element, value) {
     if (isNumber(element.length)) {
         Array.from(element).forEach(elem => removeClass(elem, value))

@@ -85,7 +85,7 @@
 }
 
 .preview-inner {
-    width: 100%;
+    width: 90%;
     max-width: 1024px;
     border-radius: 5px;
     transform-origin: center top;
@@ -216,7 +216,7 @@
 }
 
 .overlay {
-    position: absolute;
+    position: fixed;
     z-index: 11;
     left: 0;
     top: 0;
