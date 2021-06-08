@@ -10,6 +10,9 @@ class SharedTransition extends EventEmitter{
             to: config.to
         }
 
+        this.points = config.points || {}
+        this._points = null
+
         // transition 도중에 큰 작업이 일어나지 않도록 하기 위한 방지
         this.isAnimating = false
         // 완전히 열려있는지 확인
@@ -97,19 +100,23 @@ class SharedTransition extends EventEmitter{
     }
 
     _setup() {
-        const fromRect = this.DOM.from.getBoundingClientRect()
-        const toRect = this.DOM.to.getBoundingClientRect()
+        const root = document.documentElement
+        const scrollTop = root.scrollTop
+        const fromPoint = this.points.from || this.DOM.from.getBoundingClientRect() // true일때까지 넘어간다. true가 없으면 가장 마지막을 선택
+        const toPoint = this.points.to || this.DOM.to.getBoundingClientRect()
         
+        // 스크롤의 위치를 고려해서 위치를 잡아주어야한다.
+        // 이동한 스크롤의 값만큼 더해주면 완성이지롱
         this._points = {
             from: {
-                scale: fromRect.width / toRect.width,
-                x: (fromRect.width / 2) - (toRect.width / 2) + fromRect.left,
-                y: fromRect.top
+                scale: fromPoint.width / toPoint.width,
+                x: (fromPoint.width / 2) - (toPoint.width / 2) + fromPoint.left,
+                y: fromPoint.top + scrollTop 
             },
             to: {
                 scale: 1,
-                x: toRect.left,
-                y: toRect.top 
+                x: toPoint.left,
+                y: toPoint.top + scrollTop
             }
         }
     }

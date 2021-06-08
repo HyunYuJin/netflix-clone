@@ -3,7 +3,7 @@ import template from '../../components/home.html'
 import { tmdb } from '../api/index'
 import Swiper from '../lib/swiper'
 import SharedTransition from '../lib/shared-transition'
-import { addStyle, emptyStyle, emptyChild, addClass, removeClass } from '../helper/utils'
+import { addStyle, emptyStyle, emptyChild, addClass, removeClass, debounce } from '../helper/utils'
 
 class Home extends View {
     constructor() {
@@ -22,11 +22,11 @@ class Home extends View {
         }
 
         this._isScrolling = false
+        this._beforeScrollTop = 0
         this.youtubeId = 0
     }
 
     mounted() {
-        this._requestVideo()
         this._requestPopular()
         this._requestKids()
         this._requestHorror()
@@ -36,7 +36,7 @@ class Home extends View {
         this._initDOM()
     }
 
-    destroy() {
+    destroyed() {
         window.removeEventListener('scroll', this._onScrollStart)
         window.removeEventListener('scroll', this._onScrollEnd)
     }
@@ -56,17 +56,10 @@ class Home extends View {
     }
 
     _initEvent() {
+        this._onScrollStart = this._onScrollStart.bind(this)
+        this._onScrollEnd = debounce(this._onScrollEnd.bind(this), 250)
         window.addEventListener('scroll', this._onScrollStart)
         window.addEventListener('scroll', this._onScrollEnd)
-    }
-
-    _requestVideo() {
-        const player = this.$refs.playerIframe
-        tmdb.getVideo(337404)
-        .then((data) => {
-            this.youtubeId = data.url
-            console.log(this.youtubeId) // 왜 이렇게 되지;;
-        })
     }
 
     // GET DATA
@@ -78,11 +71,10 @@ class Home extends View {
             tmdb.getPopularMovie()
             .then((data) => {
                 const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
-                console.log(movieList)
                 this._render(popular, movieList)
             })
             .catch(err => {
-                console.log('Fetch Error', err);
+                console.log('Fetch Error', err)
             })
         })
     }
@@ -97,7 +89,7 @@ class Home extends View {
                 this._render(kids, movieList)
             })
             .catch(err => {
-                console.log('Fetch Error', err);
+                console.log('Fetch Error', err)
             })
         })
     }
@@ -113,7 +105,7 @@ class Home extends View {
                 this._render(history, movieList)
             })
             .catch(err => {
-                console.log('Fetch Error', err);
+                console.log('Fetch Error', err)
             })
         })
     }
@@ -128,7 +120,7 @@ class Home extends View {
                 this._render(horror, movieList)
             })
             .catch(err => {
-                console.log('Fetch Error', err);
+                console.log('Fetch Error', err)
             })
         })
     }
@@ -218,6 +210,18 @@ class Home extends View {
         })
     }
 
+    _setSmallPreviewMetadata(data) {
+        const average = data.vote_average * 10
+        const runtime = data.runtime
+        const releaseDate = data.release_date
+        const genres = data.genres
+        
+        this.$refs.average.insertAdjacentHTML('beforeend', `${average}% 일치`)
+        this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
+        this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
+        this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join())
+    }
+
     // small preview의 위치
     _setSmallPreviewPos(event) {
         const root = document.documentElement
@@ -225,7 +229,6 @@ class Home extends View {
         const toEl = this.$refs.preview
         const metaEl = this.$refs.metadata
         const bounds = fromEl.getBoundingClientRect()
-
         const winW = window.innerWidth  // 브라우저 창의 틀은 빼고 스크롤 크기를 포함한 크기
         const width = bounds.width * 1.5 // width를 1.5만큼 늘리기
         let height = bounds.height * 1.5 // height를 1.5만큼 늘리기
@@ -246,9 +249,9 @@ class Home extends View {
             position: 'absolute',
             left: 0,
             top: 0,
-            transform: `translate(${Math.ceil(left)}px, ${Math.ceil(top)}px)`,
             width: `${Math.ceil(width)}px`,
-            height: `${Math.ceil(height)}px`
+            height: `${Math.ceil(height)}px`,
+            transform: `translate(${Math.ceil(left)}px, ${Math.ceil(top)}px)`
         })
     }
 
@@ -268,7 +271,9 @@ class Home extends View {
             from: fromEl,
             to: toEl
         })
-        
+
+        const { slides } = this.DOM
+        const { average, runtime, releaseDate, genres, youtubeVideo, overlay } = this.$refs
         const smallImageSrc = fromEl.getAttribute('src') // mouseenter한 img의 src 가져오기
         const largeImageSrc = smallImageSrc.replace('w500', 'original') // 고화질 img로 변경
 
@@ -304,24 +309,27 @@ class Home extends View {
         const beforeReverseStart = () => {
             toEl.parentNode.classList.remove('small-expanded')
             toEl.parentNode.classList.remove('expanded')
+            removeClass(youtubeVideo, 'show-video')
+            removeClass(overlay, 'show-video')
         }
 
         const afterReverseEnd = () => {
             this.$refs.smallImage.src = ''
             this.$refs.largeImage.src = ''
 
-            if (this.DOM.slides.style.position === 'fixed') {
-                emptyStyle(this.DOM.slides)
+            // 클래스로 바꿔보기
+            if (slides.style.position === 'fixed') {
+                emptyStyle(slides)
                 root.scrollTop = this._beforeScrollTop
             }
 
-            emptyChild(this.$refs.average)
-            emptyChild(this.$refs.runtime)
-            emptyChild(this.$refs.releaseDate)
-            emptyChild(this.$refs.genres)
-            emptyChild(this.$refs.youtubeVideo)
+            emptyChild(average)
+            emptyChild(runtime)
+            emptyChild(releaseDate)
+            emptyChild(genres)
+            emptyChild(youtubeVideo)
 
-            this.$refs.youtubeVideo.insertAdjacentHTML('beforeend', '<div id="player"></div>')
+            youtubeVideo.insertAdjacentHTML('beforeend', '<div id="player"></div>')
             this.$refs.details.removeEventListener('click', showPreview)
             this._smallSharedTransition = null
         }
@@ -345,7 +353,10 @@ class Home extends View {
         // preview의 위치와 움직일 preview-inner를 저장해주어야하기 때문에 값을 넘겨주어야 한다.
         const sharedTransition = new SharedTransition({
             from: fromEl,
-            to: toEl
+            to: toEl,
+            points: {
+                from: fromEl.getBoundingClientRect()
+            }
         })
 
         this._beforeScrollTop = root.scrollTop
@@ -363,16 +374,13 @@ class Home extends View {
             addStyle(this.DOM.slides, {
                 position: 'fixed',
                 top: `${-this._beforeScrollTop}px`,
-                paddingTop: '68px' 
+                paddingTop: '70px'
             })
 
-            console.log(this.$refs.overlay)
             addClass(this.$refs.overlay, 'show-video')
         }
         
         const afterPlayEnd = () => {
-            emptyStyle(this.DOM.slides)
-
             close.addEventListener('click', reverse, { once: true })
         }
 
@@ -443,30 +451,7 @@ class Home extends View {
         })
     }
 
-    _setSmallPreviewMetadata(data) {
-        const average = data.vote_average * 10
-        const runtime = data.runtime
-        const releaseDate = data.release_date
-        const genres = data.genres
-        
-        this.$refs.average.insertAdjacentHTML('beforeend', `${average}% 일치`)
-        this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
-        this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
-        this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join())
-    }
-
-    _setSmallPreviewMetadata(data) {
-        const average = data.vote_average * 10
-        const runtime = data.runtime
-        const releaseDate = data.release_date
-        const genres = data.genres
-        
-        this.$refs.average.insertAdjacentHTML('beforeend', `${average}% 일치`) // 이거 왜 여러개?
-        this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
-        this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
-        this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join('')) // join('')을 사용해서 콤마 지우기
-    }
-
+    // 스크롤 감지
     _onScrollStart() {
         console.log('_onScrollStart')
         if (this._isScrolling) {

@@ -37,6 +37,16 @@ export function addClass(element, value) {
     element.classList.add(value)
 }
 
+export function emptyClass(element, value) {
+    if (isNumber(element.length)) {
+        Array.from(element).forEach(elem => addClass(elem, value))
+
+        return
+    }
+
+    element.classList.remove(value)
+}
+
 export function removeClass(element, value) {
     if (isNumber(element.length)) {
         Array.from(element).forEach(elem => removeClass(elem, value))
@@ -50,5 +60,17 @@ export function removeClass(element, value) {
 export function emptyChild (element) {
     while (element.hasChildNodes()) {
         element.removeChild(element.lastChild)
+    }
+}
+
+// From: https://medium.com/@TCAS3/debounce-deep-dive-javascript-es6-e6f8d983b7a1
+export function debounce (fn, time) {
+    let timeout
+  
+    return function () {
+      const functionCall = () => fn.apply(this, arguments)
+  
+      clearTimeout(timeout)
+      timeout = setTimeout(functionCall, time)
     }
 }
