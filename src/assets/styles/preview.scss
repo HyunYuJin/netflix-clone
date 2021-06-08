@@ -162,9 +162,15 @@
         width: 38px;
         height: 38px;
         border-radius: 50%;
-        border: 1px solid #FFF;
+        border: 1px solid rgba(255,255,255,.5);
+        background-color: rgba(42, 42, 42, 0.6);
         margin-right: 8px;
-        padding: 6px;
+        padding: 0 0.5rem;
+        transition: border 0.3s;
+
+        &:hover {
+            border: 1px solid #FFF;
+        }
 
         &.play {
             background-color: #FFF;
@@ -187,6 +193,7 @@
 
     .average {
         color: #46d369;
+        font-weight: 700;
     }
 }
 

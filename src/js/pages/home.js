@@ -215,11 +215,13 @@ class Home extends View {
         const runtime = data.runtime
         const releaseDate = data.release_date
         const genres = data.genres
+        const overview = data.overview
         
         this.$refs.average.insertAdjacentHTML('beforeend', `${average}% 일치`)
         this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
         this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
         this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join())
+        this.$refs.overview.insertAdjacentHTML('beforeend', `${overview}`)
     }
 
     // small preview의 위치
