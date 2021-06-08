@@ -22,6 +22,7 @@ class Home extends View {
         }
 
         this._isScrolling = false
+        this.youtubeId = 0
     }
 
     mounted() {
@@ -59,14 +60,12 @@ class Home extends View {
         window.addEventListener('scroll', this._onScrollEnd)
     }
 
-    async _requestVideo() {
-        const detailData = await tmdb.getMovieDetails(337404)
-
-        return new Promise((resolve, reject) => {
-            var play = this._loadYouTubeVideo(detailData.videos)
-            this.DOM.playerContainer.insertAdjacentHTML('beforeend', play)
-
-            resolve()
+    _requestVideo() {
+        const player = this.$refs.playerIframe
+        tmdb.getVideo(337404)
+        .then((data) => {
+            this.youtubeId = data.url
+            console.log(this.youtubeId) // 왜 이렇게 되지;;
         })
     }
 
@@ -79,6 +78,7 @@ class Home extends View {
             tmdb.getPopularMovie()
             .then((data) => {
                 const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
+                console.log(movieList)
                 this._render(popular, movieList)
             })
             .catch(err => {
