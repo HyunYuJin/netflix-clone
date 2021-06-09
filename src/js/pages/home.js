@@ -18,7 +18,9 @@ class Home extends View {
             slide: this.$element.querySelectorAll('.slide'),
             slideInner: this.$element.querySelector('.slide-inner'),
             slideContainer: this.$element.querySelectorAll('.slide-wrapper'),
-            slideContents: null
+            slideContents: null,
+
+            overview: this.$element.querySelector('.overview')
         }
 
         this._isScrolling = false
@@ -215,12 +217,15 @@ class Home extends View {
         const runtime = data.runtime
         const releaseDate = data.release_date
         const genres = data.genres
-        const overview = data.overview
         
         this.$refs.average.insertAdjacentHTML('beforeend', `${average}% 일치`)
         this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
         this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
         this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join())
+    }
+    
+    _setPreviewMetadata(data) {
+        const overview = data.overview
         this.$refs.overview.insertAdjacentHTML('beforeend', `${overview}`)
     }
 
@@ -266,6 +271,7 @@ class Home extends View {
         
         // metadata 정보 설정해주기
         this._setSmallPreviewMetadata(detailData)
+        
         // preview 위치 설정
         this._setSmallPreviewPos(event)
 
@@ -275,7 +281,7 @@ class Home extends View {
         })
 
         const { slides } = this.DOM
-        const { average, runtime, releaseDate, genres, youtubeVideo, overlay } = this.$refs
+        const { average, runtime, releaseDate, genres, overview, youtubeVideo, overlay } = this.$refs
         const smallImageSrc = fromEl.getAttribute('src') // mouseenter한 img의 src 가져오기
         const largeImageSrc = smallImageSrc.replace('w500', 'original') // 고화질 img로 변경
 
@@ -286,6 +292,7 @@ class Home extends View {
 
         const showPreview = () => {
             this._showPreview(toEl)
+            this._setPreviewMetadata(detailData)
             toEl.removeEventListener('mouseleave', reverse)
         }
 
@@ -329,6 +336,7 @@ class Home extends View {
             emptyChild(runtime)
             emptyChild(releaseDate)
             emptyChild(genres)
+            emptyChild(overview)
             emptyChild(youtubeVideo)
 
             youtubeVideo.insertAdjacentHTML('beforeend', '<div id="player"></div>')
@@ -371,6 +379,7 @@ class Home extends View {
         const beforePlayStart = () => {
             toEl.parentNode.classList.remove('small-expanded')
             toEl.parentNode.classList.add('expanded')
+
             emptyStyle(toEl)
 
             addStyle(this.DOM.slides, {
