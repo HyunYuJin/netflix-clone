@@ -20,6 +20,7 @@ class Home extends View {
             slideContainer: this.$element.querySelectorAll('.slide-wrapper'),
             slideContents: null,
 
+            previewInfoContainer: this.$element.querySelector('.preview-info-container'),
             overview: this.$element.querySelector('.overview')
         }
 
@@ -215,18 +216,28 @@ class Home extends View {
     _setSmallPreviewMetadata(data) {
         const average = data.vote_average * 10
         const runtime = data.runtime
-        const releaseDate = data.release_date
+        const releaseDate = data.release_date.slice(0, 4)
         const genres = data.genres
         
         this.$refs.average.insertAdjacentHTML('beforeend', `${average}% 일치`)
-        this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
         this.$refs.releaseDate.insertAdjacentHTML('beforeend', `${releaseDate}`)
+        this.$refs.runtime.insertAdjacentHTML('beforeend', `${runtime}분`)
         this.$refs.genres.insertAdjacentHTML('beforeend', genres.map(item => `<span>${item.name}</span>`).join())
     }
     
     _setPreviewMetadata(data) {
+        const previewInfoContainer = this.DOM.previewInfoContainer
+        const previewInfoRight = Array.from(this.DOM.previewInfoContainer.children)[1]
+        addClass(previewInfoContainer, 'on')
+        addClass(previewInfoRight, 'on')
+
         const overview = data.overview
+        const companies = data.production_companies
+        const fullGenres = data.genres
+
         this.$refs.overview.insertAdjacentHTML('beforeend', `${overview}`)
+        this.$refs.companies.insertAdjacentHTML('beforeend', companies.map(item => `<span>${item.name}</span>`).join())
+        this.$refs.fullGenres.insertAdjacentHTML('beforeend', fullGenres.map(item => `<span>${item.name}</span>`).join())
     }
 
     // small preview의 위치
@@ -281,7 +292,10 @@ class Home extends View {
         })
 
         const { slides } = this.DOM
-        const { average, runtime, releaseDate, genres, overview, youtubeVideo, overlay } = this.$refs
+        const { average, runtime, releaseDate, genres, overview, youtubeVideo, overlay, companies, fullGenres } = this.$refs
+        const previewInfoContainer = this.DOM.previewInfoContainer
+        const previewInfoRight = Array.from(previewInfoContainer.children)[1]
+
         const smallImageSrc = fromEl.getAttribute('src') // mouseenter한 img의 src 가져오기
         const largeImageSrc = smallImageSrc.replace('w500', 'original') // 고화질 img로 변경
 
@@ -293,6 +307,9 @@ class Home extends View {
         const showPreview = () => {
             this._showPreview(toEl)
             this._setPreviewMetadata(detailData)
+
+            emptyChild(genres)
+            
             toEl.removeEventListener('mouseleave', reverse)
         }
 
@@ -320,6 +337,8 @@ class Home extends View {
             toEl.parentNode.classList.remove('expanded')
             removeClass(youtubeVideo, 'show-video')
             removeClass(overlay, 'show-video')
+            removeClass(previewInfoContainer, 'on')
+            removeClass(previewInfoRight, 'on')
         }
 
         const afterReverseEnd = () => {
@@ -336,8 +355,11 @@ class Home extends View {
             emptyChild(runtime)
             emptyChild(releaseDate)
             emptyChild(genres)
-            emptyChild(overview)
             emptyChild(youtubeVideo)
+            
+            emptyChild(overview)
+            emptyChild(companies)
+            emptyChild(fullGenres)
 
             youtubeVideo.insertAdjacentHTML('beforeend', '<div id="player"></div>')
             this.$refs.details.removeEventListener('click', showPreview)
@@ -464,7 +486,6 @@ class Home extends View {
 
     // 스크롤 감지
     _onScrollStart() {
-        console.log('_onScrollStart')
         if (this._isScrolling) {
             return
         }
@@ -477,7 +498,6 @@ class Home extends View {
 
     _onScrollEnd() {
         if (!this._isScrolling) {
-            console.log('_onScrollEnd')
             return
         }
 

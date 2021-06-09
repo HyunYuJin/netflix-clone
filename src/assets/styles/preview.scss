@@ -182,19 +182,61 @@
     }
 }
 
-.preview-info {
+.preview-info-container {
+    width: 100%;
+    display: block;
     color: #B3B3B3;
-    font-weight: 600;
+    
+    &.on {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        column-gap: 2em;
+    }
+}
+
+.preview-info-left {
     margin: 14px 0;
 
+    color: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+
     > span {
-        padding: 0 2px;
+        margin: .25rem .5rem .25rem 0;
     }
 
     .average {
         color: #46d369;
         font-weight: 700;
     }
+
+    .overview {
+        line-height: 27px;
+        font-size: 17px;
+        margin-top: 18px;
+    }
+}
+
+.preview-info-right {
+    display: none;
+
+    &.on {
+        display: block;
+    }
+}
+
+.preview-info-right--company, .preview-info-right--genres {
+    margin: .5em;
+    margin-left: 0;
+    font-size: 14px;
+}
+
+.preview-info-right-label {
+    color: #777;
+    line-height: 20px;
+    word-break: break-word;
 }
 
 .genres {
