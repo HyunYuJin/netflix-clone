@@ -12,6 +12,7 @@ header {
     height: 70px;
     padding: 0 var(--left-right-spacing);
     background-image: var(--header-background-color);
+    z-index: 50;
 
     .logo-wrap {
         margin: 0;
