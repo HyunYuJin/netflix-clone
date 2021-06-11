@@ -2,6 +2,7 @@ import View from './view'
 import template from '../../components/home.html'
 import { tmdb } from '../api/index'
 import Swiper from '../lib/swiper'
+import VideoPlayer from '../lib/video-player'
 import SharedTransition from '../lib/shared-transition'
 import { addStyle, emptyStyle, emptyChild, addClass, removeClass, debounce } from '../helper/utils'
 
@@ -27,26 +28,27 @@ class Home extends View {
         this._isScrolling = false
         this._beforeScrollTop = 0
         this.youtubeId = 0
-    }
 
+    }
+    
     mounted() {
         this._requestPopular()
         this._requestKids()
         this._requestHorror()
         this._requestHistory()
         this._requestDocumentary()
-
+        
         this._initDOM()
     }
-
+    
     destroyed() {
         window.removeEventListener('scroll', this._onScrollStart)
         window.removeEventListener('scroll', this._onScrollEnd)
     }
-
+    
     _initDOM() {
         this._initEvent()
-
+        
         for (let i = 0; i < this.DOM.slideContainer.length; i++) {
             this.DOM.slideContainer[i].insertAdjacentHTML('beforeend', `
                 <div class="slide-content">
@@ -57,8 +59,9 @@ class Home extends View {
             `)
         }
     }
-
+    
     _initEvent() {
+        window.addEventListener("loaded", new VideoPlayer())
         this._onScrollStart = this._onScrollStart.bind(this)
         this._onScrollEnd = debounce(this._onScrollEnd.bind(this), 250)
         window.addEventListener('scroll', this._onScrollStart)

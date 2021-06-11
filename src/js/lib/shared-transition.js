@@ -1,7 +1,7 @@
 import EventEmitter from 'events'
 import { addStyle, emptyStyle } from '../helper/utils'
 
-class SharedTransition extends EventEmitter{
+class SharedTransition extends EventEmitter {
     constructor(config) {
         super()
 

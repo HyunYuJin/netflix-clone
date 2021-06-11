@@ -43,7 +43,7 @@ function onRouteLinks(event) {
  
     event.preventDefault() // 기본 이벤트를 막아준다. - 여기서는 a 태그에 기본적으로 걸려있는 이벤트를 막아주는 역할을 한다. 페이지 새로 고침되는 것을 막아주는 것이지!
 
-    const path =event.target.getAttribute('href')
+    const path = event.target.getAttribute('href')
     router.go(path)
 }
 
