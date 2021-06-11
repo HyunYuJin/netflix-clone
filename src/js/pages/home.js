@@ -32,6 +32,7 @@ class Home extends View {
     }
     
     mounted() {
+        this._requestMycontents()
         this._requestPopular()
         this._requestKids()
         this._requestHorror()
@@ -69,6 +70,23 @@ class Home extends View {
     }
 
     // GET DATA
+    _requestMycontents() {
+        const mycontents = this.$refs.mycontents
+
+        this.intersectionObserver(mycontents, () => { 
+            // 인기가 많은 순서대로 정렬
+            tmdb.getPopularMovie()
+            .then((data) => {
+                const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
+                console.log(movieList)
+                this._renderPoster(mycontents, movieList)
+            })
+            .catch(err => {
+                console.log('Fetch Error', err)
+            })
+        })
+    }
+    
     _requestPopular() { // 영화 인기 순위 API
         const popular = this.$refs.popular
 
@@ -146,7 +164,34 @@ class Home extends View {
         })
     }
 
-    _render (element, movieList) {
+    _renderPoster(element, movieList) {
+        return new Promise((resolve, reject) => {
+            while(element.hasChildNodes()) {
+                element.removeChild(element.lastChild)
+            }
+
+            movieList.forEach((movie, index) => {
+                const isLast = (index === movieList.length - 1)
+    
+                element.insertAdjacentHTML('beforeend', `
+                    <div class="poster-content" data-id="${movie.id}">
+                        <a href="/">
+                            <div class="poster-thumbnail">
+                                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.poster_path} />
+                            </div>
+                        </a>
+                    </div>
+                `)
+                
+                if (isLast) {
+                    this._setupSwipe(element)
+                    .then(() => resolve())
+                }
+            })
+        })
+    }
+
+    _render(element, movieList) {
         return new Promise((resolve, reject) => {
             while (element.hasChildNodes()) {
                 element.removeChild(element.lastChild)
