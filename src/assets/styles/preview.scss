@@ -82,6 +82,60 @@
             display: none;
         }
     }
+    
+    &.original-expanded {
+        pointer-events: auto;
+        cursor: pointer;
+    
+        .preview-inner {
+            opacity: 1;
+        }
+
+        .preview-thumbnail {
+            &::after {
+              background: none;
+            }
+        }
+
+        .preview-buttons {
+            button {
+                display: flex;
+            }
+        }
+
+        .preview-metadata {
+            opacity: 1;
+        }
+
+        .preview-close {
+            display: none;
+        }
+
+        .preview-thumbnail {
+            position: relative;
+            overflow: hidden;
+        
+            img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                height: 100%;
+            }
+        
+            img[src=""] {
+                display: none;
+            }
+        
+            &::before {
+                content: '';
+                display: block;
+                padding-bottom: 150%;
+            }
+        }
+    }
 }
 
 .preview-inner {

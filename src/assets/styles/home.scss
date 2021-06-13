@@ -303,14 +303,12 @@
     }
 }
 
-.slide-wrapper, .my-video-wrapper {
+.slide-wrapper {
     white-space: nowrap;
     font-size: 0;
     padding: 0 4%;
 
-    .sample-box { height: 150px; background-color: rgba(225, 225, 225, 0.1); }
-
-    .slide-content {
+    .slide-content, .poster-content {
         display: inline-block;
         position: relative;
         width: 16.66666667%;
@@ -326,19 +324,36 @@
         > a {
             display: block;
         }
+    }
+    
+    .slide-thumbnail {
+        position: relative;
+        border-radius: 5px;
+        overflow: hidden;
 
-        .slide-thumbnail {
-            position: relative;
-            border-radius: 5px;
-            overflow: hidden;
+        // image 완전히 load되기 전에 덜컹거리지 않도록 영역 잡아주기
+        &::before {
+            content: '';
+            display: block;
+            background-color: rgba(225, 225, 225, 0.1);
+            padding-bottom: 56.25%;
+        }
+    }
 
-            // image 완전히 load되기 전에 덜컹거리지 않도록 영역 잡아주기
-            &::before {
-                content: '';
-                display: block;
-                background-color: rgba(225, 225, 225, 0.1);
-                padding-bottom: 56.25%;
-            }
+    .poster-content {
+        padding-bottom: 220px;
+    }
+
+    .poster-thumbnail {
+        position: relative;
+        border-radius: 5px;
+
+        // image 완전히 load되기 전에 덜컹거리지 않도록 영역 잡아주기
+        &::before {
+            content: '';
+            display: block;
+            background-color: rgba(225, 225, 225, 0.1);
+            padding-bottom: 56.25%;
         }
     }
 }

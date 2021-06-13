@@ -31,6 +31,7 @@ class Home extends View {
     }
     
     mounted() {
+        this._requestOriginal()
         this._requestPopular()
         this._requestKids()
         this._requestHorror()
@@ -68,6 +69,22 @@ class Home extends View {
     }
 
     // GET DATA
+    _requestOriginal() {
+        const original = this.$refs.original
+
+        this.intersectionObserver(original, () => {
+            tmdb.getGenre(37)
+            .then((data) => {
+                const originalList = data.results
+                console.log(originalList)
+                this._renderOriginal(original, originalList)
+            })
+            .catch(err => {
+                console.log('Fetch Error', err)
+            })
+        })
+    }
+
     _requestPopular() { // 영화 인기 순위 API
         const popular = this.$refs.popular
 
@@ -145,7 +162,7 @@ class Home extends View {
         })
     }
 
-    _renderPoster(element, movieList) {
+    _renderOriginal(element, movieList) {
         return new Promise((resolve, reject) => {
             while(element.hasChildNodes()) {
                 element.removeChild(element.lastChild)
@@ -165,7 +182,7 @@ class Home extends View {
                 `)
                 
                 if (isLast) {
-                    this._setupSwipe(element)
+                    this._setupSwipe(element, 'original')
                     .then(() => resolve())
                 }
             })
@@ -192,14 +209,14 @@ class Home extends View {
                 `)
                 
                 if (isLast) {
-                    this._setupSwipe(element)
+                    this._setupSwipe(element, 'movie')
                     .then(() => resolve())
                 }
             })
         })
     }
 
-    _setupSwipe(element) {
+    _setupSwipe(element, type) {
         return new Promise((resolve, reject) => {
             // 이미지 지연 로딩
             const images = Array.from(element.querySelectorAll('[data-src]'))
@@ -216,7 +233,7 @@ class Home extends View {
 
             const mouseenterFn = (event) => {
                 enterPreview = setTimeout(() => {
-                    this._showSmallPreview(event)
+                    this._showSmallPreview(event, type)
                 }, 400)
             }
 
@@ -302,7 +319,7 @@ class Home extends View {
         })
     }
 
-    async _showSmallPreview(event) {
+    async _showSmallPreview(event, type) {
         const root = document.documentElement
         const fromEl = event.target
         const toEl = this.$refs.preview
@@ -346,7 +363,7 @@ class Home extends View {
             // 저화질 이미지 로드
             this.$refs.smallImage.src = smallImageSrc
 
-            toEl.parentNode.classList.add('small-expanded')
+            type === 'movie' ? toEl.parentNode.classList.add('small-expanded') : toEl.parentNode.classList.add('original-expanded')
             toEl.addEventListener('mouseleave', reverse, { once: true })
         }
         
@@ -355,14 +372,14 @@ class Home extends View {
             this.$refs.largeImage.src = largeImageSrc
 
             // Full preview 띄워주기
-            this.$refs.details.addEventListener('click', showPreview, { once: true })
+            if (type === 'movie') this.$refs.details.addEventListener('click', showPreview, { once: true })
 
             // 동영상 로드
             this._loadYouTubeVideo(detailData.videos)
         }
 
         const beforeReverseStart = () => {
-            toEl.parentNode.classList.remove('small-expanded')
+            type === 'movie' ? toEl.parentNode.classList.remove('small-expanded') : toEl.parentNode.classList.remove('original-expanded')
             toEl.parentNode.classList.remove('expanded')
             removeClass(youtubeVideo, 'show-video')
             removeClass(overlay, 'show-video')
@@ -399,7 +416,7 @@ class Home extends View {
         sharedTransition.on('afterPlayEnd', afterPlayEnd)
         sharedTransition.on('beforeReverseStart', beforeReverseStart)
         sharedTransition.on('afterReverseEnd', afterReverseEnd)
-        sharedTransition.play()
+        sharedTransition.play(type)
 
         this._smallSharedTransition = sharedTransition
     }

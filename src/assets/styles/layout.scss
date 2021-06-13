@@ -53,7 +53,7 @@ header {
         > a {
             display: block;
             color: #e5e5e5;
-            padding: 1.2rem;
+            padding: 0.8rem;
             transition: color .3s;
 
             &:hover {
@@ -67,6 +67,31 @@ header {
 
         > a:first-child { padding-left: 1rem; }
         > a:last-child { padding-right: 0; }
+    }
+
+    .account-dropdown-button {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .profile {
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .arrow {
+        margin-left: 10px;
+        border-style: solid;
+        border-width: 5px 5px 0 5px;
+        border-color: #FFF transparent transparent transparent;
+        transition: transform 367ms cubic-bezier(.21,0,.07,1);
+    }
+
+    .account-dropdown-button:hover .arrow {
+        transform: rotate(0.5turn);
     }
 }
 

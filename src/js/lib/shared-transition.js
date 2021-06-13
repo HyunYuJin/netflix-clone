@@ -107,18 +107,33 @@ class SharedTransition extends EventEmitter {
         
         // 스크롤의 위치를 고려해서 위치를 잡아주어야한다.
         // 이동한 스크롤의 값만큼 더해주면 완성이지롱
-        this._points = {
-            from: {
-                scale: fromPoint.width / toPoint.width,
-                x: (fromPoint.width / 2) - (toPoint.width / 2) + fromPoint.left,
-                y: fromPoint.top + scrollTop 
-            },
-            to: {
-                scale: 1,
-                x: toPoint.left,
-                y: toPoint.top + scrollTop
+        // if (type === 'movie') {
+            this._points = {
+                from: {
+                    scale: fromPoint.width / toPoint.width,
+                    x: (fromPoint.width / 2) - (toPoint.width / 2) + fromPoint.left,
+                    y: fromPoint.top + scrollTop 
+                },
+                to: {
+                    scale: 1,
+                    x: toPoint.left,
+                    y: toPoint.top + scrollTop
+                }
             }
-        }
+        // } else if (type === 'original') {
+        //     this._points = {
+        //         from: {
+        //             scale: fromPoint.width / toPoint.width - 0.2,
+        //             x: (fromPoint.width / 2) - (toPoint.width / 2) + fromPoint.left,
+        //             y: fromPoint.top + 50 + scrollTop 
+        //         },
+        //         to: {
+        //             scale: 0.8,
+        //             x: toPoint.left,
+        //             y: toPoint.top + 50 + scrollTop
+        //         }
+        //     }
+        // }
     }
 }
 
