@@ -1,64 +1,59 @@
-<div class="video-container">
-    <div class="video-player">
-        <video src="../assets/images/video.mp4" id="video" poster="https://s3-us-west-2.amazonaws.com/s.cdpn.io/197359/caminandes-2.jpg"></video>
-    </div>
+<div class="keyframe-video-container">
+    <div class="keyframe-row">
+        <div class="keyframe">
+            <div class="video-player-container">
+                <div class="video-player">
+                    <video src="../assets/images/video.mp4" id="video" poster="https://s3-us-west-2.amazonaws.com/s.cdpn.io/197359/caminandes-2.jpg"></video>
+                </div>
+            </div>
 
-    <div class="video-wrapper">
-        <div class="video-layer"></div>
-        <div class="my-video-container">
-            <div class="my-video">
-                <h2 class="my-video-title">내가 시청중인 콘텐츠</h2>
-                <div class="my-video-inner">
-                    <div class="my-video-data">
-                        <button class="prevBtn"><svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Chevron Back</title><path fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M328 112L184 256l144 144'/></svg></button>
-                        <div class="my-video-wrapper" ref="mycontents">
-                            <div class="sample-box"></div>
-                            <div class="sample-box"></div>
-                            <div class="sample-box"></div>
+            <div class="keyframe-layer">
+                <div class="keyframe-shadow-layer">
+                    <div class="shadow-bottom-layer"></div>
+                </div>
+                <div class="keyframe-button-wrapper">
+                    <button class="toggle-mute button-icon" id="toggleMute">
+                        <div class="muted" id="muted">
+                            <svg viewBox="0 0 24 24"><path d="M9 7.828L6.828 10H4v4h2.828L9 16.172V7.828zM11 21l-5-5H2V8h4l5-5v18zm2.744-4.611l-1.414-1.414a4.161 4.161 0 0 0 0-5.885l1.414-1.414a6.161 6.161 0 0 1 0 8.713zm2.47 1.825L14.8 16.8a6.742 6.742 0 0 0 0-9.535l1.414-1.414a8.742 8.742 0 0 1 0 12.363zm2.47 1.825l-1.415-1.415a9.323 9.323 0 0 0 0-13.184l1.415-1.414c4.421 4.422 4.421 11.59 0 16.013z" fill="#FFF"></path></svg>
+                            <svg viewBox="0 0 24 24"><path d="M9 7.828L6.828 10H4v4h2.828L9 16.172V7.828zM11 21l-5-5H2V8h4l5-5v18zm6-10.414l3.293-3.293 1.414 1.414L18.414 12l3.293 3.293-1.414 1.414L17 13.414l-3.293 3.293-1.414-1.414L15.586 12l-3.293-3.293 1.414-1.414L17 10.586z" fill="#FFF"></path></svg>
                         </div>
-                        <button class="nextBtn"><svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Chevron Forward</title><path fill='none' stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='48' d='M184 112l144 144-144 144'/></svg></button>
-                    </div>
+                    </button>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <div class="video-meta-wrapper">
-        <div class="video-meta-layer">
-            <div class="video-title">Caminandas</div>
-            <div class="video-synopsis">
-                Lorem anim qui ad sint nisi tempor non incididunt id non duis cillum voluptate. Elit dolor sunt magna magna irure sit. Adipisicing consequat ad duis culpa cillum do quis sit eiusmod.
-            </div>
-            <div class="video-controls">
-                <button class="toggle-play" id="togglePlay" type="button">
-                    <div class="play" id="play">
-                        <svg viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M10,7l12,8l-12,8V7z"></path></svg>
-                        <svg viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9,22h4V8H9V22z M17,8v14h4V8H17z"></path></svg>
-                    </div>
-                    <div class="blank"></div>
-                    <span class="button-text">
-                        재생
-                    </span>
-                </button>
-                <button class="video-detail" id="videoDetail" type="button">
-                    <div class="button-icon">
-                        <svg viewBox="0 0 24 24"><path d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10zm-2 0a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8zm-9 6v-7h2v7h-2zm1-8.75a1.21 1.21 0 0 1-.877-.364A1.188 1.188 0 0 1 10.75 8c0-.348.123-.644.372-.886.247-.242.54-.364.878-.364.337 0 .63.122.877.364.248.242.373.538.373.886s-.124.644-.373.886A1.21 1.21 0 0 1 12 9.25z" fill="currentColor"></path></svg>
-                    </div>
-                    <div class="blank"></div>
-                    <span class="button-text">
-                        상세정보
-                    </span>
-                </button>
-            </div>
-        </div>
 
-        <div class="video-volume">
-            <button class="toggle-mute button-icon" id="toggleMute">
-                <div class="muted" id="muted">
-                    <svg viewBox="0 0 24 24"><path d="M9 7.828L6.828 10H4v4h2.828L9 16.172V7.828zM11 21l-5-5H2V8h4l5-5v18zm2.744-4.611l-1.414-1.414a4.161 4.161 0 0 0 0-5.885l1.414-1.414a6.161 6.161 0 0 1 0 8.713zm2.47 1.825L14.8 16.8a6.742 6.742 0 0 0 0-9.535l1.414-1.414a8.742 8.742 0 0 1 0 12.363zm2.47 1.825l-1.415-1.415a9.323 9.323 0 0 0 0-13.184l1.415-1.414c4.421 4.422 4.421 11.59 0 16.013z" fill="#FFF"></path></svg>
-                    <svg viewBox="0 0 24 24"><path d="M9 7.828L6.828 10H4v4h2.828L9 16.172V7.828zM11 21l-5-5H2V8h4l5-5v18zm6-10.414l3.293-3.293 1.414 1.414L18.414 12l3.293 3.293-1.414 1.414L17 13.414l-3.293 3.293-1.414-1.414L15.586 12l-3.293-3.293 1.414-1.414L17 10.586z" fill="#FFF"></path></svg>
+            <div class="keyframe-fillcontainer">
+                <div class="keyframe-fillcontainer-info">
+                    <div class="keyframe-logo-text-wrapper">
+                        <div class="keyframe-logo">
+                            <img src="../assets/images/Caminandes.png" alt="" class="keyframe-logo-img">
+                        </div>
+                        <div class="keyframe-text">
+                            <div class="keyframe-text-wrapper">
+                                <div class="keyframe-text-msg">
+                                    험티 덤티와 잇지 빗지 거미 등 친근한 동화 속 친구들과 친숙한 동요들이 함께합니다. 음악과 모험으로 가득한 재미있는 세상, 라임 타임 타운에 오신 것을 환영해요!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="keyframe-button-controls">
+                            <button class="toggle-play" id="togglePlay" type="button">
+                                <div class="play" id="play">
+                                    <svg viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M10,7l12,8l-12,8V7z"></path></svg>
+                                    <svg viewBox="0 0 30 30" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M9,22h4V8H9V22z M17,8v14h4V8H17z"></path></svg>
+                                </div>
+                                <div class="blank"></div>
+                                <span class="button-text"> 재생 </span>
+                            </button>
+                            <button class="video-detail" id="videoDetail" type="button">
+                                <div class="button-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10zm-2 0a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8zm-9 6v-7h2v7h-2zm1-8.75a1.21 1.21 0 0 1-.877-.364A1.188 1.188 0 0 1 10.75 8c0-.348.123-.644.372-.886.247-.242.54-.364.878-.364.337 0 .63.122.877.364.248.242.373.538.373.886s-.124.644-.373.886A1.21 1.21 0 0 1 12 9.25z" fill="currentColor"></path></svg>
+                                </div>
+                                <div class="blank"></div>
+                                <span class="button-text"> 상세정보 </span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </button>
+            </div>
         </div>
     </div>
 </div>

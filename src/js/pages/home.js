@@ -14,7 +14,6 @@ class Home extends View {
         })
 
         this.DOM = {
-            playerContainer: this.$element.querySelector('.motion-player-container'),
             slides: this.$element.querySelector('.slides'),
             slide: this.$element.querySelectorAll('.slide'),
             slideInner: this.$element.querySelector('.slide-inner'),
@@ -32,7 +31,6 @@ class Home extends View {
     }
     
     mounted() {
-        this._requestMycontents()
         this._requestPopular()
         this._requestKids()
         this._requestHorror()
@@ -70,23 +68,6 @@ class Home extends View {
     }
 
     // GET DATA
-    _requestMycontents() {
-        const mycontents = this.$refs.mycontents
-
-        this.intersectionObserver(mycontents, () => { 
-            // 인기가 많은 순서대로 정렬
-            tmdb.getPopularMovie()
-            .then((data) => {
-                const movieList = data.results.sort((a, b) => b.popularity - a.popularity)
-                console.log(movieList)
-                this._renderPoster(mycontents, movieList)
-            })
-            .catch(err => {
-                console.log('Fetch Error', err)
-            })
-        })
-    }
-    
     _requestPopular() { // 영화 인기 순위 API
         const popular = this.$refs.popular
 
