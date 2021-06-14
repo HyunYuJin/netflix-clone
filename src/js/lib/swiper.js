@@ -70,7 +70,7 @@ class Swiper extends EventEmitter {
             const element = this.DOM.element
             // left 이런거 건드리는건 성능에 안좋기 때문에 translate를 많이 사용한다.
             // translateX는 paint 과정만 있기 때문에 굉장히 빠르다.
-            element.style.transition = '0.4s'
+            element.style.transition = '0.75s'
             element.style.transform = `translateX(-${ translateX }%)`
             
             // 계속 이벤트 주는거 false 될때까지 막아준다.
@@ -122,6 +122,8 @@ class Swiper extends EventEmitter {
 
         // 슬라이드 하나하나의 크기 -> 가장 처음에 next하고 다시 prev하면 바로 뒤에 슬라이드 한장이 붙는다. 
         const slideWidth = this.DOM.slides[0].clientWidth
+
+        console.log(Math.round(totalWidth / slideWidth))
 
         return Math.round(totalWidth / slideWidth)
     }

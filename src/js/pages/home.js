@@ -15,6 +15,7 @@ class Home extends View {
 
         this.DOM = {
             keyframeLogoTextWrapper: this.$element.querySelector('.keyframe-logo-text-wrapper'),
+            keyframe: this.$element.querySelector('.keyframe'),
             keyframeLogo: this.$element.querySelector('.keyframe-logo'),
             keyframeText: this.$element.querySelector('.keyframe-text'),
             slides: this.$element.querySelector('.slides'),
@@ -292,30 +293,41 @@ class Home extends View {
     }
     
     _setPreviewMetadata(data) {
+        console.log(data)
         const previewInfoContainer = this.DOM.previewInfoContainer
         const previewInfoRight = Array.from(this.DOM.previewInfoContainer.children)[1]
         addClass(previewInfoContainer, 'on')
         addClass(previewInfoRight, 'on')
 
+        const title = data.original_title
         const overview = data.overview
         const companies = data.production_companies
         const fullGenres = data.genres
 
+        this.$refs.title.insertAdjacentHTML('beforeend', `${title}`)
         this.$refs.overview.insertAdjacentHTML('beforeend', `${overview}`)
         this.$refs.companies.insertAdjacentHTML('beforeend', companies.map(item => `<span>${item.name}</span>`).join())
         this.$refs.fullGenres.insertAdjacentHTML('beforeend', fullGenres.map(item => `<span>${item.name}</span>`).join())
     }
 
     // small preview의 위치
-    _setSmallPreviewPos(event) {
+    _setSmallPreviewPos(event, type) {
         const root = document.documentElement
         const fromEl = event.target
         const toEl = this.$refs.preview
         const metaEl = this.$refs.metadata
         const bounds = fromEl.getBoundingClientRect()
         const winW = window.innerWidth  // 브라우저 창의 틀은 빼고 스크롤 크기를 포함한 크기
-        const width = bounds.width * 1.5 // width를 1.5만큼 늘리기
-        let height = bounds.height * 1.5 // height를 1.5만큼 늘리기
+        let width = 0
+        let height = 0
+
+        if (type === 'movie') {
+            width = bounds.width * 1.5 // width를 1.5만큼 늘리기
+            height = bounds.height * 1.5 // height를 1.5만큼 늘리기
+        } else if (type === 'original') {
+            width = bounds.width * 1.2 // width를 1.5만큼 늘리기
+            height = bounds.height * 1.2 // height를 1.5만큼 늘리기
+        }
         
         height = height + metaEl.clientHeight // metaEl의 내부 높이를 픽셀로 반환
 
@@ -351,15 +363,14 @@ class Home extends View {
         this._setSmallPreviewMetadata(detailData)
         
         // preview 위치 설정
-        this._setSmallPreviewPos(event)
+        this._setSmallPreviewPos(event, type)
 
         const sharedTransition = new SharedTransition({
             from: fromEl,
             to: toEl
         })
 
-        const { slides } = this.DOM
-        const { average, runtime, releaseDate, genres, overview, youtubeVideo, overlay, companies, fullGenres } = this.$refs
+        const { average, runtime, releaseDate, genres, title, overview, youtubeVideo, overlay, companies, fullGenres } = this.$refs
         const previewInfoContainer = this.DOM.previewInfoContainer
         const previewInfoRight = Array.from(previewInfoContainer.children)[1]
 
@@ -402,7 +413,8 @@ class Home extends View {
         }
 
         const beforeReverseStart = () => {
-            type === 'movie' ? toEl.parentNode.classList.remove('small-expanded') : toEl.parentNode.classList.remove('original-expanded')
+            const expanded = type === 'movie' ? 'small-expanded' : 'original-expanded'
+            toEl.parentNode.classList.remove(expanded)
             toEl.parentNode.classList.remove('expanded')
             removeClass(youtubeVideo, 'show-video')
             removeClass(overlay, 'show-video')
@@ -426,6 +438,7 @@ class Home extends View {
             emptyChild(genres)
             emptyChild(youtubeVideo)
             
+            emptyChild(title)
             emptyChild(overview)
             emptyChild(companies)
             emptyChild(fullGenres)
@@ -455,22 +468,26 @@ class Home extends View {
 
         similiar.forEach(item => {
             let overview = item.overview.length > 200 ? item.overview.substring(0, 200) + '...' : item.overview
+            let release = item.release_date ? item.release_date.slice(0, 4) : ''
+            let voteAvg = item.vote_average ? item.vote_average * 10 : null
 
-            similiarContainer.insertAdjacentHTML('beforeend', `
-                <div class="similiar-wrap">
-                    <div class="similiar-thumbnail">
-                        <img src=${tmdb.BASE_IMAGE_URL + item.backdrop_path} />
-                    </div>
-                    <div class="similiar-info">
-                        <div class="similiar-meta">
-                            <span class="similiar-release">${item.release_date.slice(0, 4)}</span>
-                            <span class="similiar-average">${item.vote_average * 10}%</span>
+            if (item.backdrop_path !== null) {
+                similiarContainer.insertAdjacentHTML('beforeend', `
+                    <div class="similiar-wrap">
+                        <div class="similiar-thumbnail">
+                            <img src=${tmdb.BASE_IMAGE_URL + item.backdrop_path} />
                         </div>
-                        <p class="similiar-title">${item.title}</p>
-                        <p class="similiar-content">${overview}</p>
+                        <div class="similiar-info">
+                            <div class="similiar-meta">
+                                <span class="similiar-release">${release}</span>
+                                <span class="similiar-average">${voteAvg}%</span>
+                            </div>
+                            <h3 class="similiar-title">${item.title}</h3>
+                            <p class="similiar-content">${overview}</p>
+                        </div>
                     </div>
-                </div>
-            `)
+                `)
+            }
         })
 
         // preview의 위치와 움직일 preview-inner를 저장해주어야하기 때문에 값을 넘겨주어야 한다.
@@ -487,7 +504,6 @@ class Home extends View {
         const reverse = () => {
             this._smallSharedTransition.reverse()
             this._smallSharedTransition.on('afterReverseEnd', () => {
-                // 더 이쁜방법 없을까유
                 similiarContainer.innerHTML = ''
             })
         }
