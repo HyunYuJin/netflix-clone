@@ -1,5 +1,9 @@
-class VideoPlayer {
+import View from '../pages/view'
+
+class VideoPlayer extends View {
     constructor() {
+        super()
+
         this.DOM = {
             video: document.getElementById('video'),
             togglePlay: document.getElementById('togglePlay'),
@@ -7,13 +11,19 @@ class VideoPlayer {
             playButton: document.getElementById('play'),
             toggleMute: document.getElementById('toggleMute'),
             toggleMuteButton: document.getElementById('toggleMute'),
-            muteButton: document.getElementById('muted')
+            muteButton: document.getElementById('muted'),
+            videoDetailButton: document.getElementById('videoDetail') 
         }
 
         this.isPlaying = false
         this.isMuted = false
+        this.timer = 0
 
         this.init()
+    }
+
+    destroyed() {
+        window.removeEventListener('DOMContentLoaded', this.autoPlay)
     }
 
     init() {
@@ -21,17 +31,32 @@ class VideoPlayer {
     }
 
     initEvent() {
+        window.addEventListener('DOMContentLoaded', this.autoPlay())
         this.DOM.togglePlay.addEventListener('click', this.togglePlay.bind(this))
         this.DOM.toggleMute.addEventListener('click', this.toggleMute.bind(this))
+        this.DOM.videoDetailButton.addEventListener('click', (event) => this.showPreview(event))
     }
 
     autoPlay() {
+        // autoplay는 음소거 상태일 때만 가능하다.
+        // 음소거하고 자동재생을 할 수 있도록 해야한다.
+        this.isMuted = false
         this.isPlaying = true
 
-        let timer = 0
-        timer = setTimeout(() => {
+        this.onUnMuted()
+        this.timer = setTimeout(() => {
             this.onPlay()
         }, 250)
+    }
+
+    showPreview(event) {
+        const root = document.documentElement
+        const fromEl = event.target // 상세정보
+        const toEl = this.$refs.preview
+        
+        const showDetailPreview = () => {
+            this._showPreview(toEl)
+        }
     }
 
     togglePlay() {

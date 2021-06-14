@@ -76,7 +76,6 @@ class Home extends View {
             tmdb.getGenre(37)
             .then((data) => {
                 const originalList = data.results
-                console.log(originalList)
                 this._renderOriginal(original, originalList)
             })
             .catch(err => {
@@ -325,6 +324,7 @@ class Home extends View {
         const toEl = this.$refs.preview
         const id = fromEl.closest('[data-id]').dataset.id
         const detailData = await tmdb.getMovieDetails(id)
+        const similiar = detailData.similar.results
         
         // metadata 정보 설정해주기
         this._setSmallPreviewMetadata(detailData)
@@ -351,7 +351,7 @@ class Home extends View {
         }
 
         const showPreview = () => {
-            this._showPreview(toEl)
+            this._showPreview(toEl, similiar)
             this._setPreviewMetadata(detailData)
 
             emptyChild(genres)
@@ -422,11 +422,37 @@ class Home extends View {
     }
     
     // Full preview
-    async _showPreview(element) {
+    async _showPreview(element, similiar) {
         const root = document.documentElement
         const fromEl = element
         const toEl = element
         const close = this.$refs.previewClose
+
+        const similiarContainer = this.$refs.similiar
+
+        console.log(similiar)
+
+        similiar.forEach(item => {
+            console.log(item)
+            let overview = ''
+            item.overview.length > 200 ? overview = item.overview.substring(0, 200) + '...' : overview = item.overview
+
+            similiarContainer.insertAdjacentHTML('beforeend', `
+                <div class="similiar-wrap">
+                    <div class="similiar-thumbnail">
+                        <img src=${tmdb.BASE_IMAGE_URL + item.backdrop_path} />
+                    </div>
+                    <div class="similiar-info">
+                        <div class="similiar-meta">
+                            <span class="similiar-release">${item.release_date.slice(0, 4)}</span>
+                            <span class="similiar-average">${item.vote_average * 10}%</span>
+                        </div>
+                        <p class="similiar-title">${item.title}</p>
+                        <p class="similiar-content">${overview}</p>
+                    </div>
+                </div>
+            `)
+        })
 
         // preview의 위치와 움직일 preview-inner를 저장해주어야하기 때문에 값을 넘겨주어야 한다.
         const sharedTransition = new SharedTransition({
@@ -441,6 +467,8 @@ class Home extends View {
 
         const reverse = () => {
             this._smallSharedTransition.reverse()
+            // 더 이쁜방법 없을까유
+            similiarContainer.innerHTML = ''
         }
 
         // click한 이미지의 src 넘겨주기
