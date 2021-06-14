@@ -22,16 +22,16 @@ class VideoPlayer extends View {
         this.init()
     }
 
-    destroyed() {
-        window.removeEventListener('DOMContentLoaded', this.autoPlay)
-    }
-
     init() {
         this.initEvent()
+        // if (document.readyState === 'complete') {
+        //     this.autoPlay()
+        // }
+        this.autoPlay()
     }
 
     initEvent() {
-        window.addEventListener('DOMContentLoaded', this.autoPlay())
+        // window.addEventListener('load', this.autoPlay.bind(this))
         this.DOM.togglePlay.addEventListener('click', this.togglePlay.bind(this))
         this.DOM.toggleMute.addEventListener('click', this.toggleMute.bind(this))
         this.DOM.videoDetailButton.addEventListener('click', (event) => this.showPreview(event))
@@ -52,7 +52,9 @@ class VideoPlayer extends View {
     showPreview(event) {
         const root = document.documentElement
         const fromEl = event.target // 상세정보
-        const toEl = this.$refs.preview
+        const toEl = this.$refs.overlay
+
+        console.log(toEl)
         
         const showDetailPreview = () => {
             this._showPreview(toEl)

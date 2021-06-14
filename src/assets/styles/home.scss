@@ -1,3 +1,6 @@
+.home {
+    min-height: 100vh;
+}
 // Keyframe
 .keyframe-video-container {
     display: block;
@@ -169,6 +172,11 @@
     position: relative;
     min-height: 13.2vw;
     margin-bottom: 1.2vw;
+    transition: 1.5s ease-out;
+}
+
+.keyframe-text {
+    transition: 1.5s ease-out;
 }
 
 .keyframe-logo-img {
@@ -340,20 +348,18 @@
         }
     }
 
-    .poster-content {
-        padding-bottom: 220px;
-    }
-
     .poster-thumbnail {
         position: relative;
         border-radius: 5px;
+
+        img { border-radius: 4px; }
 
         // image 완전히 load되기 전에 덜컹거리지 않도록 영역 잡아주기
         &::before {
             content: '';
             display: block;
             background-color: rgba(225, 225, 225, 0.1);
-            padding-bottom: 56.25%;
+            padding-bottom: 150%;
         }
     }
 }

@@ -14,6 +14,9 @@ class Home extends View {
         })
 
         this.DOM = {
+            keyframeLogoTextWrapper: this.$element.querySelector('.keyframe-logo-text-wrapper'),
+            keyframeLogo: this.$element.querySelector('.keyframe-logo'),
+            keyframeText: this.$element.querySelector('.keyframe-text'),
             slides: this.$element.querySelector('.slides'),
             slide: this.$element.querySelectorAll('.slide'),
             slideInner: this.$element.querySelector('.slide-inner'),
@@ -32,6 +35,8 @@ class Home extends View {
     
     mounted() {
         this._requestOriginal()
+        this._animateKeyframe()
+
         this._requestPopular()
         this._requestKids()
         this._requestHorror()
@@ -61,11 +66,27 @@ class Home extends View {
     }
     
     _initEvent() {
-        window.addEventListener("loaded", new VideoPlayer())
+        window.addEventListener("load", () => new VideoPlayer())
         this._onScrollStart = this._onScrollStart.bind(this)
         this._onScrollEnd = debounce(this._onScrollEnd.bind(this), 250)
         window.addEventListener('scroll', this._onScrollStart)
         window.addEventListener('scroll', this._onScrollEnd)
+    }
+
+    _animateKeyframe() {
+        console.log(this.DOM.keyframeLogo.getBoundingClientRect().height / 2) // height의 절반만큼 더 이동시키고 싶어!
+        
+        setTimeout(() => {
+            addStyle(this.DOM.keyframeLogo, {
+                transformOrigin: 'left bottom',
+                transform: `scale(0.7) translate3d(0px, ${this.DOM.keyframeLogo.getBoundingClientRect().height / 2}px, 0px)`
+            })
+            
+            addStyle(this.DOM.keyframeText, {
+                transformOrigin: 'left bottom',
+                transform: 'scale(0.7) translate3d(0px, 0px, 0px)' 
+            })
+        }, 3000)
     }
 
     // GET DATA
@@ -363,7 +384,9 @@ class Home extends View {
             // 저화질 이미지 로드
             this.$refs.smallImage.src = smallImageSrc
 
-            type === 'movie' ? toEl.parentNode.classList.add('small-expanded') : toEl.parentNode.classList.add('original-expanded')
+            const expanded = type === 'movie' ? 'small-expanded' : 'original-expanded'
+            toEl.parentNode.classList.add(expanded)
+
             toEl.addEventListener('mouseleave', reverse, { once: true })
         }
         
@@ -392,8 +415,8 @@ class Home extends View {
             this.$refs.largeImage.src = ''
 
             // 클래스로 바꿔보기
-            if (slides.style.position === 'fixed') {
-                emptyStyle(slides)
+            if (this.$refs.homeWrapper.style.position === 'fixed') {
+                emptyStyle(this.$refs.homeWrapper)
                 root.scrollTop = this._beforeScrollTop
             }
 
@@ -430,12 +453,8 @@ class Home extends View {
 
         const similiarContainer = this.$refs.similiar
 
-        console.log(similiar)
-
         similiar.forEach(item => {
-            console.log(item)
-            let overview = ''
-            item.overview.length > 200 ? overview = item.overview.substring(0, 200) + '...' : overview = item.overview
+            let overview = item.overview.length > 200 ? item.overview.substring(0, 200) + '...' : item.overview
 
             similiarContainer.insertAdjacentHTML('beforeend', `
                 <div class="similiar-wrap">
@@ -467,8 +486,10 @@ class Home extends View {
 
         const reverse = () => {
             this._smallSharedTransition.reverse()
-            // 더 이쁜방법 없을까유
-            similiarContainer.innerHTML = ''
+            this._smallSharedTransition.on('afterReverseEnd', () => {
+                // 더 이쁜방법 없을까유
+                similiarContainer.innerHTML = ''
+            })
         }
 
         // click한 이미지의 src 넘겨주기
@@ -478,9 +499,10 @@ class Home extends View {
 
             emptyStyle(toEl)
 
-            addStyle(this.DOM.slides, {
+            addStyle(this.$refs.homeWrapper, {
                 position: 'fixed',
                 top: `${-this._beforeScrollTop}px`,
+                width: '100%',
                 paddingTop: '70px'
             })
 
