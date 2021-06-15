@@ -123,8 +123,6 @@ class Swiper extends EventEmitter {
         // 슬라이드 하나하나의 크기 -> 가장 처음에 next하고 다시 prev하면 바로 뒤에 슬라이드 한장이 붙는다. 
         const slideWidth = this.DOM.slides[0].clientWidth
 
-        console.log(Math.round(totalWidth / slideWidth))
-
         return Math.round(totalWidth / slideWidth)
     }
 

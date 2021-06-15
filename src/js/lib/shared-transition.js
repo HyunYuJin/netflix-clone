@@ -10,7 +10,7 @@ class SharedTransition extends EventEmitter {
             to: config.to
         }
 
-        console.log(document.querySelector('.keyframe'))
+        this.keyframeHeight = document.querySelector('.keyframe').clientHeight
 
         this.points = config.points || {}
         this._points = null
@@ -94,7 +94,7 @@ class SharedTransition extends EventEmitter {
     _animate({ x, y, scale }) {
         return new Promise((resolve, reject) => {
           const toEl = this.DOM.to
-          toEl.style.transition = '0.45s';
+          toEl.style.transition = '.24s';
           toEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
     
           // transition이 완료된 이후에 발생하는 이벤트, transition 완료를 감지

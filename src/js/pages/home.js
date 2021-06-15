@@ -31,6 +31,7 @@ class Home extends View {
         this._isScrolling = false
         this._beforeScrollTop = 0
         this.youtubeId = 0
+        this._youtubeTimer = 0
 
     }
     
@@ -67,7 +68,7 @@ class Home extends View {
     }
     
     _initEvent() {
-        window.addEventListener("load", () => new VideoPlayer())
+        window.addEventListener("load", () => new VideoPlayer(this.$refs))
         this._onScrollStart = this._onScrollStart.bind(this)
         this._onScrollEnd = debounce(this._onScrollEnd.bind(this), 250)
         window.addEventListener('scroll', this._onScrollStart)
@@ -75,17 +76,19 @@ class Home extends View {
     }
 
     _animateKeyframe() {
-        console.log(this.DOM.keyframeLogo.getBoundingClientRect().height / 2) // height의 절반만큼 더 이동시키고 싶어!
+        const halfHeightLogo = this.DOM.keyframeLogo.getBoundingClientRect().height / 2
+        const halfHeightText = this.DOM.keyframeText.getBoundingClientRect().height / 2
         
         setTimeout(() => {
             addStyle(this.DOM.keyframeLogo, {
                 transformOrigin: 'left bottom',
-                transform: `scale(0.7) translate3d(0px, ${this.DOM.keyframeLogo.getBoundingClientRect().height / 2}px, 0px)`
+                transform: `scale(0.8) translate3d(0px, ${halfHeightLogo}px, 0px)`
             })
             
             addStyle(this.DOM.keyframeText, {
                 transformOrigin: 'left bottom',
-                transform: 'scale(0.7) translate3d(0px, 0px, 0px)' 
+                opacity: 0,
+                transform: `scale(0.7) translate3d(0px, ${halfHeightText}px, 0px)`
             })
         }, 3000)
     }
@@ -295,7 +298,6 @@ class Home extends View {
     }
     
     _setPreviewMetadata(data) {
-        console.log(data)
         const previewInfoContainer = this.DOM.previewInfoContainer
         const previewInfoRight = Array.from(this.DOM.previewInfoContainer.children)[1]
         addClass(previewInfoContainer, 'on')
@@ -320,16 +322,9 @@ class Home extends View {
         const metaEl = this.$refs.metadata
         const bounds = fromEl.getBoundingClientRect()
         const winW = window.innerWidth  // 브라우저 창의 틀은 빼고 스크롤 크기를 포함한 크기
-        let width = 0
-        let height = 0
-
-        if (type === 'movie') {
-            width = bounds.width * 1.5 // width를 1.5만큼 늘리기
-            height = bounds.height * 1.5 // height를 1.5만큼 늘리기
-        } else if (type === 'original') {
-            width = bounds.width * 1.2 // width를 1.5만큼 늘리기
-            height = bounds.height * 1.2 // height를 1.5만큼 늘리기
-        }
+        const scale = type === 'movie' ? 1.5 : 1.2
+        let width = bounds.width * scale // width를 1.5만큼 늘리기
+        let height = bounds.height * scale // height를 1.5만큼 늘리기
         
         height = height + metaEl.clientHeight // metaEl의 내부 높이를 픽셀로 반환
 
@@ -397,8 +392,12 @@ class Home extends View {
             // 저화질 이미지 로드
             this.$refs.smallImage.src = smallImageSrc
 
-            const expanded = type === 'movie' ? 'small-expanded' : 'original-expanded'
-            toEl.parentNode.classList.add(expanded)
+            if (type === 'movie') {
+                toEl.parentNode.classList.add('small-expanded')
+            } else {
+                toEl.parentNode.classList.add('original-expanded')
+                toEl.parentNode.classList.add('original-active')
+            }
 
             toEl.addEventListener('mouseleave', reverse, { once: true })
         }
@@ -408,16 +407,17 @@ class Home extends View {
             this.$refs.largeImage.src = largeImageSrc
 
             // Full preview 띄워주기
-            if (type === 'movie') this.$refs.details.addEventListener('click', showPreview, { once: true })
+            this.$refs.details.addEventListener('click', showPreview, { once: true })
 
             // 동영상 로드
-            this._loadYouTubeVideo(detailData.videos)
+            // this._loadYouTubeVideo(detailData.videos)
         }
 
         const beforeReverseStart = () => {
             const expanded = type === 'movie' ? 'small-expanded' : 'original-expanded'
             toEl.parentNode.classList.remove(expanded)
             toEl.parentNode.classList.remove('expanded')
+
             removeClass(youtubeVideo, 'show-video')
             removeClass(overlay, 'show-video')
             removeClass(previewInfoContainer, 'on')
@@ -427,6 +427,8 @@ class Home extends View {
         const afterReverseEnd = () => {
             this.$refs.smallImage.src = ''
             this.$refs.largeImage.src = ''
+
+            toEl.parentNode.classList.remove('original-active')         
 
             // 클래스로 바꿔보기
             if (this.$refs.homeWrapper.style.position === 'fixed') {
@@ -446,6 +448,7 @@ class Home extends View {
             emptyChild(fullGenres)
 
             youtubeVideo.insertAdjacentHTML('beforeend', '<div id="player"></div>')
+            // clearInterval(this._youtubeTimer)
             this.$refs.details.removeEventListener('click', showPreview)
             this._smallSharedTransition = null
         }
@@ -512,6 +515,8 @@ class Home extends View {
 
         // click한 이미지의 src 넘겨주기
         const beforePlayStart = () => {
+            // toEl.parentNode.classList.remove('original-active')
+            // toEl.parentNode.classList.remove('original-expanded')
             toEl.parentNode.classList.remove('small-expanded')
             toEl.parentNode.classList.add('expanded')
 
@@ -524,10 +529,14 @@ class Home extends View {
                 paddingTop: '70px'
             })
 
+            // Full 화면일 때 스크롤의 위치 강제로 이동시키기
+            window.scrollTo({ top: 0 })
+
             addClass(this.$refs.overlay, 'show-video')
         }
         
         const afterPlayEnd = () => {
+
             close.addEventListener('click', reverse, { once: true })
         }
 
@@ -596,6 +605,21 @@ class Home extends View {
                 }
             }
         })
+
+        // From: https://stackoverflow.com/questions/9914373/ontimeupdate-with-youtube-api/51552777
+        // 동영상 끝나기 1초 전에 화면에서 없애기
+        // 유튜브 API에 ontimeupdate 이벤트가 따로 없어서 인터벌로 돌림.
+        // this._youtubeTimer = setInterval(() => {
+        //     if (player.getCurrentTime && player.getDuration) {
+        //     const currentTime = player.getCurrentTime()
+        //     const duration = player.getDuration()
+        //         if (currentTime >= (duration - 1)) {
+        //             removeClass(youtubeVideo, 'show-video')
+        
+        //             clearInterval(this._youtubeTimer)
+        //         }
+        //     }
+        // }, 100)
     }
 
     // 스크롤 감지

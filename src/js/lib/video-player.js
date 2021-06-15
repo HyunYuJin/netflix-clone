@@ -1,6 +1,10 @@
+
+import { addClass } from '../helper/utils'
+import SharedTransition from '../lib/shared-transition'
+
 class VideoPlayer {
-    constructor() {
-        this.DOM = {
+    constructor(_DOM) {
+        this.DOM = Object.assign(_DOM, {
             video: document.getElementById('video'),
             togglePlay: document.getElementById('togglePlay'),
             togglePlayButton: document.getElementById('togglePlay'),
@@ -9,16 +13,20 @@ class VideoPlayer {
             toggleMuteButton: document.getElementById('toggleMute'),
             muteButton: document.getElementById('muted'),
             videoDetailButton: document.getElementById('videoDetail') 
-        }
+        })
 
         this.isPlaying = false
         this.isMuted = false
         this.timer = 0
+        this._watching = true
 
         this.init()
     }
 
     init() {
+        if (this._watching == false) {
+            this.playended()
+        }
         this.autoPlay()
         this.initEvent()
         // if (document.readyState === 'complete') {
@@ -46,15 +54,35 @@ class VideoPlayer {
     }
 
     showPreview(event) {
-        const root = document.documentElement
-        const fromEl = event.target // 상세정보
-        const toEl = this.$refs.overlay
+        const target = document.querySelector('[data-id="423108"] img')
 
-        console.log(toEl)
+        const mouseenterEvent = new Event('mouseenter')
+        target.dispatchEvent(mouseenterEvent)
+
+        // setTimeout(() => {
+        //     this.DOM.details.click()
+        // }, 250)
         
-        const showDetailPreview = () => {
-            this._showPreview(toEl)
-        }
+        // const root = document.documentElement
+        // const fromEl = event.target // 상세정보
+        // const toEl = this.$refs.overlay
+
+        // console.log(toEl)
+
+        // // SharedTransition
+        
+        // const showDetailPreview = () => {
+        //     this._showPreview(toEl)
+        // }
+    }
+
+    playended() { // watch?
+        setInterval(() => {
+            if (this.DOM.video.ended) {
+                this._watching = false
+                this.onPause()
+            }
+        }, 100)
     }
 
     togglePlay() {

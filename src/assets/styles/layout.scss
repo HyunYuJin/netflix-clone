@@ -71,7 +71,6 @@ header {
     }
 
     .search-box {
-        padding: 10px;
         position: absolute;
         top: 50%;
         right: 100%;
@@ -116,6 +115,7 @@ header {
         display: flex;
         justify-content: center;
         align-items: center;
+        padding-right: 10px;
     }
 
     .account-dropdown-button {
