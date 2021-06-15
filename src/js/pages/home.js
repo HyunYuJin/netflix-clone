@@ -32,7 +32,6 @@ class Home extends View {
         this._beforeScrollTop = 0
         this.youtubeId = 0
         this._youtubeTimer = 0
-
     }
     
     mounted() {
@@ -410,7 +409,7 @@ class Home extends View {
             this.$refs.details.addEventListener('click', showPreview, { once: true })
 
             // 동영상 로드
-            // this._loadYouTubeVideo(detailData.videos)
+            this._loadYouTubeVideo(detailData.videos)
         }
 
         const beforeReverseStart = () => {
@@ -609,17 +608,17 @@ class Home extends View {
         // From: https://stackoverflow.com/questions/9914373/ontimeupdate-with-youtube-api/51552777
         // 동영상 끝나기 1초 전에 화면에서 없애기
         // 유튜브 API에 ontimeupdate 이벤트가 따로 없어서 인터벌로 돌림.
-        // this._youtubeTimer = setInterval(() => {
-        //     if (player.getCurrentTime && player.getDuration) {
-        //     const currentTime = player.getCurrentTime()
-        //     const duration = player.getDuration()
-        //         if (currentTime >= (duration - 1)) {
-        //             removeClass(youtubeVideo, 'show-video')
+        this._youtubeTimer = setInterval(() => {
+            if (player.getCurrentTime && player.getDuration) {
+            const currentTime = player.getCurrentTime()
+            const duration = player.getDuration()
+                if (currentTime >= (duration - 1)) {
+                    removeClass(youtubeVideo, 'show-video')
         
-        //             clearInterval(this._youtubeTimer)
-        //         }
-        //     }
-        // }, 100)
+                    clearInterval(this._youtubeTimer)
+                }
+            }
+        }, 100)
     }
 
     // 스크롤 감지
