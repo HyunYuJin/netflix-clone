@@ -1,9 +1,5 @@
-import View from '../pages/view'
-
-class VideoPlayer extends View {
+class VideoPlayer {
     constructor() {
-        super()
-
         this.DOM = {
             video: document.getElementById('video'),
             togglePlay: document.getElementById('togglePlay'),
@@ -23,11 +19,11 @@ class VideoPlayer extends View {
     }
 
     init() {
+        this.autoPlay()
         this.initEvent()
         // if (document.readyState === 'complete') {
         //     this.autoPlay()
         // }
-        this.autoPlay()
     }
 
     initEvent() {

@@ -309,7 +309,7 @@
     
     h2 {
         margin-bottom: 1.2rem;
-        font-size: 1.4vw;
+        font-size: 1.1rem;
         color: #e5e5e5;
         padding: 0 var(--left-right-spacing);
     }
@@ -370,6 +370,14 @@
             padding-bottom: 150%;
         }
     }
+}
+
+.movie-title {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #FFF;
+    text-align: center;
+    margin-top: 1rem;
 }
 
 .prevBtn, .nextBtn{

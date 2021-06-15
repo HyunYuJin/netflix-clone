@@ -35,3 +35,7 @@ ul li {
 svg {
     outline: none;
 }
+
+img[src=""] {
+    display: none;
+}

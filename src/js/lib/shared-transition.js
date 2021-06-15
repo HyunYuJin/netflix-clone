@@ -74,6 +74,7 @@ class SharedTransition extends EventEmitter {
         addStyle(this.DOM.to, {
             position: 'absolute',
             left: 0,
+            right: 0,
             top: 0,
             transform: `translate(${toPos.x}px, ${toPos.y}px) scale(${toPos.scale})`
         })
@@ -81,9 +82,9 @@ class SharedTransition extends EventEmitter {
         this._animate(fromPos)
         .then(() => {
             this.isAnimating = false
-            this.isExpanded = false // preview가 닫힘
-
+            
             emptyStyle(this.DOM.to)
+            this.isExpanded = false // preview가 닫힘
 
             this.emit('afterReverseEnd')
         })
@@ -93,7 +94,7 @@ class SharedTransition extends EventEmitter {
     _animate({ x, y, scale }) {
         return new Promise((resolve, reject) => {
           const toEl = this.DOM.to
-          toEl.style.transition = '.24s';
+          toEl.style.transition = '0.45s';
           toEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
     
           // transition이 완료된 이후에 발생하는 이벤트, transition 완료를 감지

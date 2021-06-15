@@ -191,14 +191,15 @@ class Home extends View {
 
             movieList.forEach((movie, index) => {
                 const isLast = (index === movieList.length - 1)
-    
+
                 element.insertAdjacentHTML('beforeend', `
                     <div class="poster-content" data-id="${movie.id}">
                         <a href="/">
                             <div class="poster-thumbnail">
-                                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.poster_path} />
+                                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.poster_path} alt="${movie.title} 이미지" />
                             </div>
                         </a>
+                        <h3 class="movie-title">${movie.title}</h3>
                     </div>
                 `)
                 
@@ -223,9 +224,10 @@ class Home extends View {
                     <div class="slide-content" data-id="${movie.id}">
                         <a href="/">
                             <div class="slide-thumbnail">
-                                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.backdrop_path} />
+                                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.backdrop_path} alt="${movie.title} 이미지" />
                             </div>
                         </a>
+                        <h3 class="movie-title">${movie.title}</h3>
                     </div>
                 `)
                 
