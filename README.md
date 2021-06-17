@@ -14,32 +14,36 @@
 - All Vanilla JS
 
 ## Folder Structor
+
+```sh
 ├─src
- │	├─assets
- │	 │	├─images: 이미지 파일들이 있는 폴더
- │	 │	├─styles: 스타일이 정의되어 있는 폴더
- │ 	├─components
- │	 │	├─home.html: home 페이지
- │	 │	├─movie.html: movie 페이지
- │	 │	├─tv.html: tv 페이지
- │ 	├─js
- │	 │	├─api: TMDB API를 기능별로 함수를 정의한 폴더
- │	 │	├─helper: 여러 폴더에서 재사용되는 함수를 정의한 페이지
- │	 │	├─lib: 라이브러리 폴더
- │	 │	 │     ├─shared-transition.js: preview(small, large)
- │	 │	 │     ├─swiper.js: Infinite slider를 정의
- │	 │	 │     ├─video-player.js: 비디오 플레이어
- │	 │	├─pages
- │	 │	 │     ├─home.js: home 페이지에 들어가는 기능들을 정의
- │	 │	 │     ├─movie.js: movie 페이지에 들어가는 기능들을 정의
- │	 │	 │     ├─tv.js: tv 페이지에 들어가는 기능들을 정의
- │	 │	 │     ├─view.js: 가장 최상의 파일로 각 페이지의 부모 역할을 담당.
- │	 │	├─router
- │	 │	 │     ├─router.js: 라우터 설정 파일
- │	 │	 │     ├─routes.js: 페이지 별 경로 및 이름 설정 파일
- │	 │	├─app.js: js 폴더를 한번에 모아서 렌더링할 페이지
- │ 	└─index.html
-└─package.json
+   ├─assets
+   │  ├─styles: 스타일이 정의되어 있는 폴더
+   │  └─images: 이미지 파일들이 있는 폴더
+   ├─components
+   │   home.html: home 페이지
+   │   movie.html: movie 페이지
+   │   tv.html: tv 페이지
+   ├─js
+   │  ├─api
+   │  │   index.js: TMDB API를 기능별로 함수를 정의한 폴더
+   │  ├─helper
+   │  │   utils.js: 여러 폴더에서 재사용되는 함수 정의
+   │  ├─lib
+   │  │   shared-transition.js: preview(small, large) 라이브러리
+   │  │   swiper.js: Infinite slider 라이브러리
+   │  │   video-player.js: 비디오 플레이어 라이브러리
+   │  ├─pages
+   │  │   home.js: home 페이지에 들어가는 기능들을 정의
+   │  │   movie.js: movie 페이지에 들어가는 기능들을 정의
+   │  │   tv.js: tv 페이지에 들어가는 기능들을 정의
+   │  │   view.js: 가장 최상의 파일로 각 페이지의 부모 역할을 담당.
+   │  ├─router
+   │  │   router.js: 라우터 설정 파일
+   │  └─  routes.js: 페이지 별 경로 및 이름 설정 파일
+   │   app.js: js 폴더를 한번에 모아서 렌더링할 페이지
+   └─index.html
+```
 
 
 ## 정리
