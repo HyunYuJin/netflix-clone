@@ -41,7 +41,7 @@
    │  ├─router
    │  │   router.js: 라우터 설정 파일
    │  └─  routes.js: 페이지 별 경로 및 이름 설정 파일
-   │   app.js: js 폴더를 한번에 모아서 렌더링할 페이지
+   │   app.js: js 시작점 (한번에 모아서 렌더링)
    └─index.html
 ```
 

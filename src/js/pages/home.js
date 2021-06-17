@@ -198,7 +198,7 @@ class Home extends View {
                     <div class="poster-content" data-id="${movie.id}">
                         <a href="/">
                             <div class="poster-thumbnail">
-                                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.poster_path} alt="${movie.title} 이미지" />
+                                <img class="lazy-load" data-src="${tmdb.BASE_IMAGE_URL + movie.poster_path}" alt="${movie.title} 이미지" />
                             </div>
                         </a>
                         <h3 class="movie-title">${movie.title}</h3>
