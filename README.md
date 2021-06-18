@@ -1,12 +1,5 @@
 # Side Project (Netflix Clone)
 
-### 이벤트 위임
-* mouseover - mouseout: 자식 요소 위에 마우스를 over해도 이벤트가 발생한다.
-* mouseenter - mouseleave: 바인딩 된 요소에만 이벤트가 발생한다.
-
-#### 이벤트 건거는 반드시 제거하기
-* 페이지가 이동되더라도 등록된 이벤트는 자동으로 제거되지 않고 계속해서 돌아가기 때문에 해제해주지 않으면 성능에 좋지 않다.
-# Netflix-clone
 ## _Vanilla JS 스터디를 목적으로한 Netflix Clone 코딩_
 
 - Parcel
@@ -53,6 +46,13 @@
 ### 스크롤 바 
 scrollTop: scroll bar 위치
   
+### 이벤트 위임
+* mouseover - mouseout: 자식 요소 위에 마우스를 over해도 이벤트가 발생한다.
+* mouseenter - mouseleave: 바인딩 된 요소에만 이벤트가 발생한다.
+
+#### 이벤트 건거는 반드시 제거하기
+* 페이지가 이동되더라도 등록된 이벤트는 자동으로 제거되지 않고 계속해서 돌아가기 때문에 해제해주지 않으면 성능에 좋지 않다.
+  
 ### EventEmitter 
 Node.js에 내장되어있는 일종의 observer 패턴 구현  
 Node.js에는 많은 객체들은 이벤트를 발생시키는데, 이러한 객체들은 event.EventEmitter라는 인스턴스를 이용하고 있다.
@@ -84,5 +84,11 @@ window.addEventListener('scroll', () => {
   }, 250)
 })
 ```
+  
+### translateX
+element를 이동시키는 작업을 할 때 position을 사용해서 이동을 시키기보다는 translate를 이용해서 움직이는 편이 성능에 더 좋다.  
+translate는 paint 과정만 있기 때문에 굉장히 빠르다고 한다.
 
+
+  
 [참고](https://edu.goorm.io/learn/lecture/557/%ED%95%9C-%EB%88%88%EC%97%90-%EB%81%9D%EB%82%B4%EB%8A%94-node-js/lesson/174362/event-%EB%AA%A8%EB%93%88)

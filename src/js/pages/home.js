@@ -277,7 +277,7 @@ class Home extends View {
             })
             
             swiper.on('update', (index) => {
-                console.log(swiper.current)
+                // console.log(swiper.current)
             })
 
             resolve()
@@ -452,6 +452,7 @@ class Home extends View {
             this._smallSharedTransition = null
         }
 
+        // key가 beforePlayStart, 뒤에가 리스너
         sharedTransition.on('beforePlayStart', beforePlayStart)
         sharedTransition.on('afterPlayEnd', afterPlayEnd)
         sharedTransition.on('beforeReverseStart', beforeReverseStart)

@@ -8,7 +8,9 @@ class Swiper extends EventEmitter {
         this.DOM.navigation = options.navigation || {}
         this.DOM.slides = Array.from(this.DOM.element.children)
 
+        // 보여지는 슬라이드의 개수
         this.slideGroupCount = this._calcSlideGroup()
+        // 슬라이드 그룹의 개수
         this.slideGroupTotal = Math.ceil(this.DOM.slides.length / this.slideGroupCount)
 
         this.current = 0
@@ -47,9 +49,11 @@ class Swiper extends EventEmitter {
 
         let translateX = 0
 
+        // 무한 swiper를 해주기 위해 slideGroupTotal보다 값이 크거나 0보다 작으면 다시 slideGroupTotal 값으로 셋팅해준다.
         if (direction === 'next') {
+            // swiper를 할 때마다 current 값을 하나씩 증가해준다.
             this.current = this.current < this.slideGroupTotal - 1 ? ++this.current : 0
-            // 애니메이션 한번도 시작하지 않았으면 100% 했으면 200%
+            // 애니메이션 한번도 시작하지 않았으면 100% 했으면 200%만큼 더한 값 만큼 이동시킨다.
             translateX = this.slideWidth + (!this.started ? 100 : 200)
         } else {
             this.current = this.current > 0 ? --this.current : this.slideGroupTotal - 1
@@ -59,6 +63,8 @@ class Swiper extends EventEmitter {
         this._animation(translateX)
         .then(() => {
             this._setInfiniteSwipe(!this.started ? '' : direction)
+            // 근데 왜 emit update를 해주지..?
+            // 안해줘도 this.current 값은 잘 업데이트가 되는데..
             this.emit('update', this.current)
             this.isAnimating = false
         })
@@ -78,6 +84,7 @@ class Swiper extends EventEmitter {
         })
     }
 
+    // 무한 swipe
     _setInfiniteSwipe(direction) {
         const { element, slides } = this.DOM
 
@@ -123,6 +130,7 @@ class Swiper extends EventEmitter {
         // 슬라이드 하나하나의 크기 -> 가장 처음에 next하고 다시 prev하면 바로 뒤에 슬라이드 한장이 붙는다. 
         const slideWidth = this.DOM.slides[0].clientWidth
 
+        // 그렇게해서 슬라이드 그룹의 수를 구한다.
         return Math.round(totalWidth / slideWidth)
     }
 

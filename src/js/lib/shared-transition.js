@@ -24,7 +24,7 @@ class SharedTransition extends EventEmitter {
     }
 
     init() {
-        console.log('init class SharedTransition')
+        
     }
 
     // animation을 시작하는 것 자체
@@ -94,7 +94,7 @@ class SharedTransition extends EventEmitter {
     _animate({ x, y, scale }) {
         return new Promise((resolve, reject) => {
           const toEl = this.DOM.to
-          toEl.style.transition = '.24s';
+          toEl.style.transition = '.24s'
           toEl.style.transform = `translate(${x}px, ${y}px) scale(${scale})`
     
           // transition이 완료된 이후에 발생하는 이벤트, transition 완료를 감지
