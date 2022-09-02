@@ -10,8 +10,6 @@ class SharedTransition extends EventEmitter {
             to: config.to
         }
 
-        this.keyframeHeight = document.querySelector('.keyframe').clientHeight
-
         this.points = config.points || {}
         this._points = null
 
