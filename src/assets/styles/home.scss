@@ -87,6 +87,22 @@
         }
       }
     }
+
+    .play {
+      position: absolute;
+      bottom: 50px;
+      left: 100px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-start;
+      color: #FFF;
+      text-transform: uppercase;
+      font-weight: 500;
+      text-decoration: none;
+      letter-spacing: 1px;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
   }
 
   .title {
