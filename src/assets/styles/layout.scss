@@ -235,3 +235,36 @@ header {
     }
   }
 }
+
+@media (max-width: 991px) {
+  header {
+    height: 0;
+    padding: 0 50px;
+    flex-direction: column;
+
+    .logo-wrap {
+      padding-top: 20px;
+    }
+
+    .nav-action {
+      display: none;
+    }
+
+    nav {
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  header {
+    .nav-links > a {
+      padding: 0.8rem;
+      font-size: 1rem;
+    }
+  }
+}

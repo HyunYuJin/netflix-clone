@@ -25,7 +25,7 @@
     z-index: 1;
     max-width: 550px;
 
-    h4 {
+    .metadata {
       color: rgba(255, 255, 255, 0.5);
       font-weight: 500;
 
@@ -42,18 +42,23 @@
         }
 
         &.limit-age {
-          background-color: #DE0611;
-          color: #FFF;
-          padding: 0 8px;
-          display: inline-block;
-          font-style: normal;
-          border-radius: 2px;
+          &::before {
+            content: '12+';
+            background-color: #DE0611;
+            color: #FFF;
+            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-style: normal;
+            border-radius: 2px;
+          }
         }
       }
     }
 
     p {
-      font-size: 1em;
+      font-size: 1.25em;
       font-weight: 300;
       line-height: 1.5em;
       color: #FFF;
@@ -62,6 +67,7 @@
 
     .buttons {
       position: relative;
+      padding-bottom: 10px;
 
       a {
         position: relative;
@@ -112,6 +118,50 @@
 
   .title {
     max-width: 250px;
+  }
+}
+
+@media (max-width: 991px) {
+  .banner {
+    padding: 100px 50px;
+
+    .content {
+      p {
+        font-size: 1em;
+      }
+    }
+
+    .play-trailer {
+      left: 50px;
+      font-size: 1em;
+
+      img {
+        margin-right: 10px;
+        max-width: 40px;
+      }
+    }
+
+    .trailer {
+      &-video {
+        max-width: 90%;
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .banner {
+    padding: 150px 20px 50px;
+
+    .play-trailer {
+      left: 20px;
+      bottom: 20px;
+      font-size: 0.8em;
+      
+      img {
+        max-width: 30px;
+      }
+    }
   }
 }
 
