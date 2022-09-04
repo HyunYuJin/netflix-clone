@@ -21,7 +21,10 @@ class Home extends View {
       slideContents: null,
 
       previewInfoContainer: this.$element.querySelector('.preview-info-container'),
-      overview: this.$element.querySelector('.overview')
+      overview: this.$element.querySelector('.overview'),
+      playTrailer: this.$element.querySelector('.play-trailer'),
+      trailer: this.$element.querySelector('.trailer'),
+      cancelTrailer: this.$element.querySelector('.trailer-cancel')
     }
 
     this._isScrolling = false
@@ -31,6 +34,7 @@ class Home extends View {
   }
 
   mounted() {
+    this._requestVideo()
     this._requestOriginal()
     this._requestPopular()
     this._requestKids()
@@ -51,12 +55,12 @@ class Home extends View {
 
     for (let i = 0; i < this.DOM.slideContainer.length; i++) {
       this.DOM.slideContainer[i].insertAdjacentHTML('beforeend', `
-                <div class="slide-content">
-                    <a href="/">
-                        <div class="init-div">&nbsp;</div>
-                    </a>
-                </div>
-            `)
+        <div class="slide-content">
+          <a href="/">
+            <div class="init-div">&nbsp;</div>
+          </a>
+        </div>
+      `)
     }
   }
 
@@ -66,9 +70,38 @@ class Home extends View {
     this._onScrollEnd = debounce(this._onScrollEnd.bind(this), 250)
     window.addEventListener('scroll', this._onScrollStart)
     window.addEventListener('scroll', this._onScrollEnd)
+
+    this.DOM.playTrailer.addEventListener('click', this._onTrailer.bind(this))
+    this.DOM.playTrailer.addEventListener('click', this._onTrailer.bind(this))
+    this.DOM.cancelTrailer.addEventListener('click', this._closeTrailer.bind(this))
+  }
+
+  _onTrailer(event) {
+    const trailer = this.DOM.trailer
+
+    addClass(trailer, 'on')
+  }
+
+  _closeTrailer() {
+    const trailer = this.DOM.trailer
+
+    removeClass(trailer, 'on')
   }
 
   // GET DATA
+  async _requestVideo() {
+    const landing = this.$refs.landing
+
+    tmdb.getMovieDetails(337401)
+      .then((data) => {
+        const landingList = data
+        this._renderLanding(landing, landingList)
+      })
+      .catch((err) => {
+        console.log('Fetch Error', err)
+      })
+  }
+
   _requestOriginal() {
     const original = this.$refs.original
 
@@ -161,6 +194,22 @@ class Home extends View {
     })
   }
 
+  _renderLanding(element, movieList) {
+    return new Promise((resolve, reject) => {
+      element.insertAdjacentHTML('beforeend', `
+        <div class="landing-poster" data-id="${movieList.id}">
+          <a href="/">
+            <div class="landing-poster-thumbnail">
+              <img src="${tmdb.BASE_IMAGE_URL + movieList.poster_path}" alt="${movieList.title} 이미지" />
+            </div>
+          </a>
+        </div>
+      `)
+
+      resolve()
+    })
+  }
+
   _renderOriginal(element, movieList) {
     return new Promise((resolve, reject) => {
       while (element.hasChildNodes()) {
@@ -171,15 +220,15 @@ class Home extends View {
         const isLast = (index === movieList.length - 1)
 
         element.insertAdjacentHTML('beforeend', `
-                    <div class="poster-content" data-id="${movie.id}">
-                        <a href="/">
-                            <div class="poster-thumbnail">
-                                <img class="lazy-load" data-src="${tmdb.BASE_IMAGE_URL + movie.poster_path}" alt="${movie.title} 이미지" />
-                            </div>
-                        </a>
-                        <h3 class="movie-title">${movie.title}</h3>
-                    </div>
-                `)
+          <div class="poster-content" data-id="${movie.id}">
+            <a href="/">
+              <div class="poster-thumbnail">
+                <img class="lazy-load" data-src="${tmdb.BASE_IMAGE_URL + movie.poster_path}" alt="${movie.title} 이미지" />
+              </div>
+            </a>
+            <h3 class="movie-title">${movie.title}</h3>
+          </div>
+        `)
 
         if (isLast) {
           this._setupSwipe(element, 'original')
@@ -199,15 +248,15 @@ class Home extends View {
         const isLast = (index === movieList.length - 1)
 
         element.insertAdjacentHTML('beforeend', `
-                    <div class="slide-content" data-id="${movie.id}">
-                        <a href="/">
-                            <div class="slide-thumbnail">
-                                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.backdrop_path} alt="${movie.title} 이미지" />
-                            </div>
-                        </a>
-                        <h3 class="movie-title">${movie.title}</h3>
-                    </div>
-                `)
+          <div class="slide-content" data-id="${movie.id}">
+            <a href="/">
+              <div class="slide-thumbnail">
+                <img class="lazy-load" data-src=${tmdb.BASE_IMAGE_URL + movie.backdrop_path} alt="${movie.title} 이미지" />
+              </div>
+            </a>
+            <h3 class="movie-title">${movie.title}</h3>
+          </div>
+        `)
 
         if (isLast) {
           this._setupSwipe(element, 'movie')
@@ -454,20 +503,20 @@ class Home extends View {
 
       if (item.backdrop_path !== null) {
         similiarContainer.insertAdjacentHTML('beforeend', `
-                    <div class="similiar-wrap">
-                        <div class="similiar-thumbnail">
-                            <img src=${tmdb.BASE_IMAGE_URL + item.backdrop_path} />
-                        </div>
-                        <div class="similiar-info">
-                            <div class="similiar-meta">
-                                <span class="similiar-release">${release}</span>
-                                <span class="similiar-average">${voteAvg}%</span>
-                            </div>
-                            <h3 class="similiar-title">${item.title}</h3>
-                            <p class="similiar-content">${overview}</p>
-                        </div>
-                    </div>
-                `)
+          <div class="similiar-wrap">
+            <div class="similiar-thumbnail">
+              <img src=${tmdb.BASE_IMAGE_URL + item.backdrop_path} />
+            </div>
+            <div class="similiar-info">
+              <div class="similiar-meta">
+                <span class="similiar-release">${release}</span>
+                <span class="similiar-average">${voteAvg}%</span>
+              </div>
+              <h3 class="similiar-title">${item.title}</h3>
+              <p class="similiar-content">${overview}</p>
+            </div>
+          </div>
+        `)
       }
     })
 
@@ -512,7 +561,6 @@ class Home extends View {
     }
 
     const afterPlayEnd = () => {
-
       close.addEventListener('click', reverse, { once: true })
     }
 
